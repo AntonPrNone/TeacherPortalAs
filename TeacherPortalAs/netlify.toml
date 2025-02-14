@@ -1,7 +1,9 @@
+[build]
+  command = "dotnet publish -c Release"
+  publish = "bin/Release/net8.0/publish/wwwroot"
+  environment = { NETLIFY_USE_YARN = "false" }
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
-
-[build]
-  publish = "bin/Release/net8.0/publish/wwwroot" 
+  status = 200 
