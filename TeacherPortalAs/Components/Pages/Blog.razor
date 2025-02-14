@@ -1,0 +1,54 @@
+@page "/blog"
+@using TeacherPortalAs.Services
+@using TeacherPortalAs.Models
+@inject IBlogService BlogService
+@rendermode InteractiveWebAssembly
+
+<div class="blog-container">
+    <h1>Блог</h1>
+
+    @if (posts == null)
+    {
+        <div class="loading">Загрузка...</div>
+    }
+    else if (!posts.Any())
+    {
+        <div class="no-posts">
+            <p>Пока нет опубликованных постов</p>
+        </div>
+    }
+    else
+    {
+        <div class="posts-grid">
+            @foreach (var post in posts.OrderByDescending(p => p.CreatedAt))
+            {
+                <article class="post-card">
+                    @if (!string.IsNullOrEmpty(post.ImageUrl))
+                    {
+                        <div class="post-image">
+                            <img src="@post.ImageUrl" alt="@post.Title" />
+                        </div>
+                    }
+                    <div class="post-content">
+                        <h2>@post.Title</h2>
+                        <div class="post-date">
+                            @post.CreatedAt.ToString("dd.MM.yyyy")
+                        </div>
+                        <div class="post-text">
+                            @((MarkupString)post.Content)
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<BlogPost>? posts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await BlogService.GetBlogPostsAsync();
+    }
+} 

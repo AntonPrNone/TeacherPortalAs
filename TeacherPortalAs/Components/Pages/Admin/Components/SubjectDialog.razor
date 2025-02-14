@@ -1,0 +1,46 @@
+@if (ShowDialog)
+{
+    <div class="dialog-overlay">
+        <div class="dialog">
+            <h3>@(Subject.Id == 0 ? "Добавить предмет" : "Редактировать предмет")</h3>
+            
+            <div class="form-group">
+                <label for="name">Название</label>
+                <input id="name" class="form-control" @bind="Subject.Name" />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Описание</label>
+                <textarea id="description" class="form-control" @bind="Subject.Description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="iconClass">Класс иконки</label>
+                <input id="iconClass" class="form-control" @bind="Subject.IconClass" />
+            </div>
+
+            <div class="dialog-buttons">
+                <button class="btn btn-secondary" @onclick="OnCancel">Отмена</button>
+                <button class="btn btn-primary" @onclick="OnSave">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool ShowDialog { get; set; }
+    [Parameter] public Subject Subject { get; set; } = new();
+    [Parameter] public EventCallback<bool> ShowDialogChanged { get; set; }
+    [Parameter] public EventCallback<Subject> OnSaveCallback { get; set; }
+
+    private async Task OnCancel()
+    {
+        await ShowDialogChanged.InvokeAsync(false);
+    }
+
+    private async Task OnSave()
+    {
+        await OnSaveCallback.InvokeAsync(Subject);
+        await ShowDialogChanged.InvokeAsync(false);
+    }
+} 

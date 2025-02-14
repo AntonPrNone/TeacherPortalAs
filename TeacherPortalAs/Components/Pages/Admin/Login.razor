@@ -1,0 +1,45 @@
+@page "/admin/login"
+@layout EmptyLayout
+@rendermode InteractiveWebAssembly
+@inject Supabase.Client SupabaseClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<div class="login-container">
+    <div class="login-card">
+        <h2>Вход в админ-панель</h2>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" class="form-control" @bind="email" />
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" class="form-control" @bind="password" />
+        </div>
+        
+        <button class="btn btn-primary" @onclick="HandleLogin">Войти</button>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private string password = "";
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            var response = await SupabaseClient.Auth.SignInWithPassword(email, password);
+            if (response?.User != null)
+            {
+                NavigationManager.NavigateTo("/admin");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Ошибка при входе: {ex.Message}");
+        }
+    }
+} 

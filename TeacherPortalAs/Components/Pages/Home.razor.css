@@ -1,0 +1,615 @@
+.home-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.welcome-section {
+    text-align: center;
+    padding: 4rem 1rem;
+    margin-bottom: 4rem;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(226,232,255,0.98) 100%),
+                linear-gradient(45deg, rgba(79, 70, 229, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+    border-radius: 1.5rem;
+    box-shadow: 
+        0 10px 30px rgba(79, 70, 229, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 1;
+}
+
+.welcome-pattern span {
+    position: absolute;
+    font-size: 24px;
+    animation: float 15s ease-in-out infinite;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.welcome-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #E11D48 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 10px rgba(79, 70, 229, 0.1);
+    letter-spacing: -0.02em;
+}
+
+.welcome-section h1 + p {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 1.5rem 0;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.welcome-section p:last-child {
+    margin-top: 1.5rem;
+    color: #4A5568;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card i {
+    font-size: 2.5rem;
+    color: #6B46C1;
+    margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+    color: #2D3748;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.feature-card p {
+    color: #4A5568;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .welcome-section {
+        padding: 2rem 1rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 2.2rem;
+    }
+
+    .welcome-section p {
+        font-size: 1.1rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+.welcome-section {
+    text-align: center;
+    padding: 4rem 1rem;
+    margin-bottom: 4rem;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(226,232,255,0.98) 100%),
+                linear-gradient(45deg, rgba(79, 70, 229, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+    border-radius: 1.5rem;
+    box-shadow: 
+        0 10px 30px rgba(79, 70, 229, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-pattern,
+.about-pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.welcome-pattern span,
+.about-pattern span {
+    position: absolute;
+    font-size: 24px;
+    animation: float 15s ease-in-out infinite;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Позиции для welcome-pattern */
+.welcome-pattern span:nth-child(1) { top: 10%; left: 5%; }
+.welcome-pattern span:nth-child(2) { top: 75%; left: 15%; }
+.welcome-pattern span:nth-child(3) { top: 20%; left: 25%; }
+.welcome-pattern span:nth-child(4) { top: 65%; left: 35%; }
+.welcome-pattern span:nth-child(5) { top: 15%; left: 45%; }
+.welcome-pattern span:nth-child(6) { top: 80%; left: 55%; }
+.welcome-pattern span:nth-child(7) { top: 25%; left: 65%; }
+.welcome-pattern span:nth-child(8) { top: 70%; left: 75%; }
+.welcome-pattern span:nth-child(9) { top: 30%; left: 85%; }
+.welcome-pattern span:nth-child(10) { top: 60%; left: 95%; }
+.welcome-pattern span:nth-child(11) { top: 40%; left: 10%; }
+.welcome-pattern span:nth-child(12) { top: 85%; left: 30%; }
+.welcome-pattern span:nth-child(13) { top: 5%; left: 50%; }
+.welcome-pattern span:nth-child(14) { top: 90%; left: 70%; }
+.welcome-pattern span:nth-child(15) { top: 35%; left: 90%; }
+
+/* Позиции для about-pattern */
+.about-pattern span:nth-child(1) { top: 15%; left: 10%; }
+.about-pattern span:nth-child(2) { top: 70%; left: 20%; }
+.about-pattern span:nth-child(3) { top: 25%; left: 30%; }
+.about-pattern span:nth-child(4) { top: 80%; left: 40%; }
+.about-pattern span:nth-child(5) { top: 20%; left: 50%; }
+.about-pattern span:nth-child(6) { top: 75%; left: 60%; }
+.about-pattern span:nth-child(7) { top: 30%; left: 70%; }
+.about-pattern span:nth-child(8) { top: 85%; left: 80%; }
+.about-pattern span:nth-child(9) { top: 10%; left: 90%; }
+.about-pattern span:nth-child(10) { top: 60%; left: 15%; }
+.about-pattern span:nth-child(11) { top: 35%; left: 35%; }
+.about-pattern span:nth-child(12) { top: 65%; left: 45%; }
+.about-pattern span:nth-child(13) { top: 40%; left: 65%; }
+.about-pattern span:nth-child(14) { top: 55%; left: 85%; }
+.about-pattern span:nth-child(15) { top: 45%; left: 95%; }
+
+@keyframes float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-60px) rotate(240deg) scale(1.2);
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(0) rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+.main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 50%, #9333EA 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.subtitle {
+    color: #4A5568;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 0 2rem;
+    margin-bottom: 4rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    position: relative;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #e6e9ff 100%);
+    box-shadow: 
+        0 30px 60px rgba(79, 70, 229, 0.15),
+        0 12px 24px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(124, 58, 237, 0.1) inset;
+    transform: translateY(0);
+    cursor: pointer;
+}
+
+.stat-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 
+        0 40px 70px rgba(79, 70, 229, 0.2),
+        0 15px 30px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(124, 58, 237, 0.2) inset;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #4F46E5;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4A5568;
+    margin-bottom: 0.5rem;
+}
+
+.stat-description {
+    font-size: 0.9rem;
+    color: #718096;
+    line-height: 1.5;
+}
+
+.about-section {
+    background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(226,232,255,0.95) 100%);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    margin: 0 1rem 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 20px 40px rgba(79, 70, 229, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.05);
+}
+
+.about-section h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 50%, #9333EA 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+    z-index: 2;
+}
+
+.about-section p {
+    color: #4A5568;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.about-section p:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .main-title {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .welcome-section {
+        padding: 3rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .about-section {
+        padding: 2rem;
+        margin: 0 1rem 2rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-section,
+    .about-section {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .main-title {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .stats-grid {
+        padding: 0 1rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+    }
+}
+
+/* Мобильные устройства */
+@media (max-width: 480px) {
+    .welcome-section {
+        padding: 2rem 1rem;
+        margin: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .main-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+        .subtitle br {
+            display: none;
+        }
+
+    .stats-grid {
+        gap: 1rem;
+        padding: 0 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+    }
+
+    .stat-description {
+        font-size: 0.85rem;
+    }
+
+    .about-section {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+    .welcome-section,
+    .about-section {
+        margin: 0.5rem;
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        padding: 0 0.5rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+}
+
+/* Общий стиль для всех градиентных текстов */
+.main-title,
+.stat-value,
+.about-section h2 {
+    cursor: text;
+    color: #4F46E5; /* Fallback цвет */
+    width: 100%; /* Для блочных элементов */
+}
+
+/* Базовые стили для stats-grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+    gap: 1.5rem;
+    padding: 0 1rem;
+    margin-bottom: 4rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Десктопная версия */
+@media (min-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 колонки на десктопе */
+    }
+}
+
+/* Планшеты */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 колонки на планшетах */
+        gap: 1.5rem;
+        padding: 0 1.5rem;
+    }
+}
+
+/* Мобильные устройства */
+@media (max-width: 767px) {
+    .stats-grid {
+        grid-template-columns: 1fr; /* Точно одна колонка на мобильных */
+        gap: 1rem;
+        padding: 0 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+}
+
+/* Если всё-таки нужен градиент, можно использовать тень текста */
+.main-title {
+    text-shadow: none;
+}
+
+/* Обновляем стили для контента, явно разрешая выделение */
+.main-title,
+.subtitle,
+.stat-value,
+.stat-label,
+.stat-description,
+.about-section h2,
+.about-section p {
+    position: relative;
+    z-index: 2;
+    user-select: text;
+}
+
+/* Убедимся, что контейнеры имеют правильное позиционирование */
+.welcome-section,
+.about-section {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Убедимся, что контент находится поверх паттерна */
+.welcome-section h1,
+.welcome-section p,
+.about-section h2,
+.about-section p {
+    position: relative;
+    z-index: 1;
+}
+
+/* Добавим разную скорость для разных эмодзи */
+.welcome-pattern span:nth-child(odd) {
+    animation-duration: 12s;
+}
+
+.welcome-pattern span:nth-child(3n) {
+    animation-duration: 15s;
+}
+
+.welcome-pattern span:nth-child(3n+1) {
+    animation-duration: 10s;
+}
+
+/* Оставляем только общие стили для паттерна */
+.pattern-background {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.pattern-background span {
+    position: absolute;
+    font-size: 24px;
+    animation: float 15s ease-in-out infinite;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Общие позиции для всех эмодзи */
+.pattern-background span:nth-child(1) { top: 10%; left: 5%; }
+.pattern-background span:nth-child(2) { top: 75%; left: 15%; }
+.pattern-background span:nth-child(3) { top: 20%; left: 25%; }
+.pattern-background span:nth-child(4) { top: 65%; left: 35%; }
+.pattern-background span:nth-child(5) { top: 15%; left: 45%; }
+.pattern-background span:nth-child(6) { top: 80%; left: 55%; }
+.pattern-background span:nth-child(7) { top: 25%; left: 65%; }
+.pattern-background span:nth-child(8) { top: 70%; left: 75%; }
+.pattern-background span:nth-child(9) { top: 30%; left: 85%; }
+.pattern-background span:nth-child(10) { top: 60%; left: 95%; }
+.pattern-background span:nth-child(11) { top: 40%; left: 10%; }
+.pattern-background span:nth-child(12) { top: 85%; left: 30%; }
+.pattern-background span:nth-child(13) { top: 5%; left: 50%; }
+.pattern-background span:nth-child(14) { top: 90%; left: 70%; }
+.pattern-background span:nth-child(15) { top: 35%; left: 90%; }
+
+/* Разная скорость анимации */
+.pattern-background span:nth-child(odd) {
+    animation-duration: 12s;
+}
+
+.pattern-background span:nth-child(3n) {
+    animation-duration: 15s;
+}
+
+.pattern-background span:nth-child(3n+1) {
+    animation-duration: 10s;
+}

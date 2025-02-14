@@ -1,0 +1,161 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using TeacherPortalAs.Services
+@using TeacherPortalAs.Models
+
+<div class="manager-container">
+    <div class="manager-header">
+        <h2>Управление материалами</h2>
+        <button class="btn btn-primary" @onclick="ShowDialog">Добавить материал</button>
+    </div>
+
+    @if (materials == null)
+    {
+        <p>Загрузка...</p>
+    }
+    else
+    {
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Предмет</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var material in materials)
+                    {
+                        <tr>
+                            <td>@material.Title</td>
+                            <td>@material.Description</td>
+                            <td>@(subjects?.FirstOrDefault(s => s.Id == material.SubjectId)?.Name ?? "Не указан")</td>
+                            <td class="actions-cell">
+                                <button class="action-button btn-edit" @onclick="() => EditMaterial(material)">
+                                    <i class="fas fa-edit"></i>
+                                    <span>Изменить</span>
+                                </button>
+                                <button class="action-button btn-delete" @onclick="() => DeleteMaterial(material.Id)">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Удалить</span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (showDialog)
+    {
+        <div class="dialog-overlay">
+            <div class="dialog">
+                <h3>@(editingMaterial.Id == 0 ? "Добавить материал" : "Редактировать материал")</h3>
+                
+                <div class="form-group">
+                    <label for="title">Название</label>
+                    <input id="title" class="form-control" @bind="editingMaterial.Title" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Описание</label>
+                    <textarea id="description" class="form-control" @bind="editingMaterial.Description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Предмет</label>
+                    <select id="subject" class="form-control" @bind="editingMaterial.SubjectId">
+                        <option value="">Выберите предмет</option>
+                        @if (subjects != null)
+                        {
+                            @foreach (var subject in subjects)
+                            {
+                                <option value="@subject.Id">@subject.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="dialog-buttons">
+                    <button class="btn btn-secondary" @onclick="CloseDialog">Отмена</button>
+                    <button class="btn btn-primary" @onclick="SaveMaterial">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Inject]
+    private IMaterialService MaterialService { get; set; } = default!;
+    
+    [Inject]
+    private ISubjectService SubjectService { get; set; } = default!;
+    
+    [Inject]
+    private IJSRuntime JS { get; set; } = default!;
+
+    private List<Material>? materials;
+    private List<Subject>? subjects;
+    private bool showDialog;
+    private Material editingMaterial = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        materials = await MaterialService.GetMaterialsAsync();
+        subjects = await SubjectService.GetSubjectsAsync();
+    }
+
+    private void ShowDialog()
+    {
+        editingMaterial = new();
+        showDialog = true;
+        StateHasChanged();
+    }
+
+    private void EditMaterial(Material material)
+    {
+        editingMaterial = material;
+        showDialog = true;
+        StateHasChanged();
+    }
+
+    private async Task DeleteMaterial(int id)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот материал?"))
+        {
+            await MaterialService.DeleteMaterialAsync(id);
+            await LoadData();
+        }
+    }
+
+    private void CloseDialog()
+    {
+        showDialog = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveMaterial()
+    {
+        if (editingMaterial.Id == 0)
+        {
+            await MaterialService.CreateMaterialAsync(editingMaterial);
+        }
+        else
+        {
+            await MaterialService.UpdateMaterialAsync(editingMaterial);
+        }
+        await LoadData();
+        showDialog = false;
+        StateHasChanged();
+    }
+} 

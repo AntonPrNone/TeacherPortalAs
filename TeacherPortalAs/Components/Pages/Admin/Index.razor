@@ -1,0 +1,96 @@
+@page "/admin"
+@rendermode InteractiveWebAssembly
+
+<h1>Админ-панель</h1>
+
+@using TeacherPortalAs.Components.Pages.Admin.Components
+@using TeacherPortalAs.Services
+@using TeacherPortalAs.Models
+@inject Supabase.Client SupabaseClient
+@inject NavigationManager NavigationManager
+@inject ISubjectService SubjectService
+@inject IJSRuntime JS
+
+<PageTitle>Админ-панель</PageTitle>
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Админ-панель</h1>
+        <button class="btn btn-outline" @onclick="HandleLogout">Выйти</button>
+    </div>
+
+    <div class="admin-content">
+        <div class="admin-sidebar">
+            <div class="admin-nav">
+                <button class="nav-item @(currentSection == "subjects" ? "active" : "")" 
+                        @onclick='() => currentSection = "subjects"'>
+                    Предметы
+                </button>
+                <button class="nav-item @(currentSection == "materials" ? "active" : "")" 
+                        @onclick='() => currentSection = "materials"'>
+                    Материалы
+                </button>
+                <button class="nav-item @(currentSection == "tests" ? "active" : "")" 
+                        @onclick='() => currentSection = "tests"'>
+                    Тесты
+                </button>
+                <button class="nav-item @(currentSection == "blog" ? "active" : "")" 
+                        @onclick='() => currentSection = "blog"'>
+                    <i class="fas fa-newspaper"></i>
+                    Блог
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-main">
+            @switch (currentSection)
+            {
+                case "subjects":
+                    <TeacherPortalAs.Components.Pages.Admin.Components.SubjectsManager />
+                    break;
+                case "materials":
+                    <TeacherPortalAs.Components.Pages.Admin.Components.MaterialsManager />
+                    break;
+                case "tests":
+                    <TeacherPortalAs.Components.Pages.Admin.Components.TestsManager />
+                    break;
+                case "blog":
+                    <BlogManager />
+                    break;
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private string currentSection = "subjects";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var session = await SupabaseClient.Auth.RetrieveSessionAsync();
+            if (session?.User == null)
+            {
+                NavigationManager.NavigateTo("/admin/login");
+            }
+        }
+        catch
+        {
+            NavigationManager.NavigateTo("/admin/login");
+        }
+    }
+
+    private async Task HandleLogout()
+    {
+        try 
+        {
+            await SupabaseClient.Auth.SignOut();
+            NavigationManager.NavigateTo("/admin/login", true);
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Ошибка при выходе: {ex.Message}");
+        }
+    }
+} 

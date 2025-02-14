@@ -1,0 +1,190 @@
+@using TeacherPortalAs.Services
+@using TeacherPortalAs.Models
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Web
+@rendermode InteractiveWebAssembly
+@inject IBlogService BlogService
+@inject IJSRuntime JS
+
+<link href="css/AdminComponents.css" rel="stylesheet" />
+
+<div class="manager-container">
+    <div class="manager-header">
+        <h2>Управление блогом</h2>
+        <button class="btn btn-primary" @onclick="() => ShowDialog(null)">Добавить пост</button>
+    </div>
+
+    @if (posts == null)
+    {
+        <p>Загрузка...</p>
+    }
+    else
+    {
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Заголовок</th>
+                        <th>Дата создания</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var post in posts.OrderByDescending(p => p.CreatedAt))
+                    {
+                        <tr>
+                            <td>@post.Title</td>
+                            <td>@post.CreatedAt.ToString("dd.MM.yyyy")</td>
+                            <td>@(post.IsPublished ? "Опубликован" : "Черновик")</td>
+                            <td class="actions-cell">
+                                <button class="action-button btn-edit" @onclick="() => ShowDialog(post)">
+                                    <i class="fas fa-edit"></i>
+                                    <span>Изменить</span>
+                                </button>
+                                <button class="action-button btn-delete" @onclick="() => DeletePost(post.Id)">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Удалить</span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@if (showDialog)
+{
+    <div class="dialog-overlay">
+        <div class="dialog blog-dialog">
+            <h3>@(currentPost?.Id > 0 ? "Редактировать" : "Добавить") пост</h3>
+            
+            <div class="form-group">
+                <label for="title">Заголовок:</label>
+                <input id="title" class="form-control" @bind="currentPost.Title" />
+            </div>
+
+            <div class="form-group">
+                <label for="imageUrl">Ссылка на изображение:</label>
+                <input id="imageUrl" class="form-control" @bind="currentPost.ImageUrl" 
+                       placeholder="https://example.com/image.jpg" />
+                @if (!string.IsNullOrEmpty(currentPost.ImageUrl))
+                {
+                    <div class="image-preview">
+                        <img src="@currentPost.ImageUrl" alt="Предпросмотр" />
+                    </div>
+                }
+            </div>
+            
+            <div class="form-group">
+                <label>Форматирование текста:</label>
+                <div class="formatting-toolbar">
+                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("h2"))" title="Заголовок">
+                        <i class="fas fa-heading"></i>
+                    </button>
+                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("b"))" title="Жирный">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("i"))" title="Курсив">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("ul"))" title="Список">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                </div>
+                <textarea id="content" class="form-control content-editor" 
+                          @bind="currentPost.Content" rows="10"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" @bind="currentPost.IsPublished" />
+                    Опубликовать
+                </label>
+            </div>
+
+            <div class="dialog-buttons">
+                <button class="btn btn-secondary" @onclick="CloseDialog">Отмена</button>
+                <button class="btn btn-primary" @onclick="SavePost">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<BlogPost>? posts;
+    private bool showDialog;
+    private BlogPost currentPost = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        posts = await BlogService.GetBlogPostsAsync(includeUnpublished: true);
+    }
+
+    private void ShowDialog(BlogPost? post)
+    {
+        currentPost = post ?? new BlogPost();
+        showDialog = true;
+    }
+
+    private void CloseDialog()
+    {
+        showDialog = false;
+        currentPost = new();
+    }
+
+    private async Task LoadPosts()
+    {
+        posts = await BlogService.GetBlogPostsAsync(includeUnpublished: true);
+        StateHasChanged();
+    }
+
+    private async Task SavePost()
+    {
+        try 
+        {
+            if (currentPost.Id == 0)
+            {
+                await BlogService.CreateBlogPostAsync(currentPost);
+            }
+            else
+            {
+                await BlogService.UpdateBlogPostAsync(currentPost);
+            }
+
+            await LoadPosts();
+            CloseDialog();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Ошибка при сохранении: {ex.Message}");
+        }
+    }
+
+    private async Task DeletePost(int id)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот пост?"))
+        {
+            await BlogService.DeleteBlogPostAsync(id);
+            await LoadPosts();
+        }
+    }
+
+    private void InsertFormat(string tag)
+    {
+        string template = tag switch
+        {
+            "h2" => "<h2>Заголовок</h2>",
+            "b" => "<b>жирный текст</b>",
+            "i" => "<i>курсив</i>",
+            "ul" => "<ul>\n  <li>пункт списка</li>\n  <li>пункт списка</li>\n</ul>",
+            _ => string.Empty
+        };
+
+        currentPost.Content = string.IsNullOrEmpty(currentPost.Content) 
+            ? template 
+            : currentPost.Content + "\n" + template;
+    }
+} 
