@@ -1,21 +1,23 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
-@inject IJSRuntime JS
+@using TeacherPortalAs.Components.Layout
 
 <ErrorBoundary>
     <ChildContent>
         <Router AppAssembly="@typeof(App).Assembly">
             <Found Context="routeData">
-                <RouteView RouteData="@routeData" DefaultLayout="@typeof(TeacherPortalAs.Components.Layout.MainLayout)" />
+                <MainLayout>
+                    <RouteView RouteData="@routeData" />
+                </MainLayout>
                 <FocusOnNavigate RouteData="@routeData" Selector="h1" />
             </Found>
             <NotFound>
                 <PageTitle>Not found</PageTitle>
-                <LayoutView Layout="@typeof(TeacherPortalAs.Components.Layout.MainLayout)">
+                <MainLayout>
                     <div class="alert alert-warning">
                         <h3>Страница не найдена</h3>
                         <p>Запрошенная страница не существует.</p>
                     </div>
-                </LayoutView>
+                </MainLayout>
             </NotFound>
         </Router>
     </ChildContent>

@@ -4,15 +4,16 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>full</TrimMode>
-    <InvariantGlobalization>true</InvariantGlobalization>
-    <BlazorEnableCompression>true</BlazorEnableCompression>
-    <EmccCompileOptimizationFlag>-O3</EmccCompileOptimizationFlag>
-    <WasmEmitSymbolMap>false</WasmEmitSymbolMap>
-    <RunAOTCompilation>true</RunAOTCompilation>
-    <WasmEnableSIMD>true</WasmEnableSIMD>
-    <WasmEnableExceptionHandling>true</WasmEnableExceptionHandling>
+    <PublishTrimmed>false</PublishTrimmed>
+    <BlazorEnableCompression>false</BlazorEnableCompression>
+    <BlazorCacheBootResources>false</BlazorCacheBootResources>
+    <BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
+    <WasmBuildNative>false</WasmBuildNative>
+    <EmccFlags>-s ASSERTIONS=1</EmccFlags>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <ScopedCssEnabled>true</ScopedCssEnabled>
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
   </PropertyGroup>
 
   <ItemGroup>

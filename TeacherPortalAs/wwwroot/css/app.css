@@ -1,6 +1,6 @@
 /* Основные переменные */
 :root {
-    --primary-color: #3B82F6;
+    --primary-color: #6366F1;
     --primary-hover: #2563EB;
     --danger-color: #EF4444;
     --danger-hover: #DC2626;
@@ -8,6 +8,7 @@
     --text-primary: #1F2937;
     --text-secondary: #4B5563;
     --border-color: #E5E7EB;
+    --background-color: #EEF2FF;
 }
 
 /* Базовые стили */
@@ -16,7 +17,9 @@ html, body {
     margin: 0;
     padding: 0;
     color: var(--text-primary);
-    background: #F9FAFB;
+    background: var(--background-color);
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* Навигация */
@@ -177,6 +180,11 @@ html, body {
     background: var(--danger-hover);
 }
 
+.btn-secondary {
+    background-color: #6B7280;
+    color: white;
+}
+
 /* Базовые стили форм */
 .form-group {
     margin-bottom: 1rem;
@@ -203,166 +211,18 @@ html, body {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-/* Диалоговые окна */
-.dialog-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.dialog {
-    background: white;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
     color: var(--text-secondary);
     text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
 
-.dialog-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-.btn-secondary {
-    background-color: #6B7280;
-    color: white;
-}
-
-/* Стили для домашней страницы */
-.welcome-section {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: white;
-    border-radius: 1rem;
-    margin: 2rem auto;
-    max-width: 1200px;
-    position: relative;
-    overflow: hidden;
-}
-
-.welcome-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-around;
-    padding: 1rem;
-    opacity: 0.1;
-    font-size: 2rem;
-}
-
-.main-title {
-    font-size: 2.5rem;
-    color: var(--primary-color);
-    margin-bottom: 1.5rem;
-    position: relative;
-    z-index: 1;
-}
-
-.subtitle {
-    font-size: 1.25rem;
-    color: var(--text-primary);
-    opacity: 0.8;
-    margin-bottom: 2rem;
-    position: relative;
-    z-index: 1;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.stat-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
-
-.stat-icon {
-    font-size: 2.5rem;
-    color: var(--primary-color);
-    background: var(--border-color);
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.stat-content {
-    flex: 1;
-}
-
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-}
-
-.stat-label {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.stat-description {
-    color: var(--text-primary);
-    opacity: 0.8;
-    font-size: 0.9rem;
-}
-
-/* Адаптивность для мобильных устройств */
-@media (max-width: 768px) {
-    .main-title {
-        font-size: 2rem;
-    }
-    
-    .subtitle {
-        font-size: 1rem;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stat-card {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-    }
-}
-
+/* Стили для Blazor Error UI */
 #blazor-error-ui {
     position: fixed;
     right: 20px;
@@ -389,6 +249,7 @@ html, body {
     color: var(--text-secondary);
 }
 
+/* Общие стили для контейнеров ошибок */
 .error-container {
     position: fixed;
     top: 0;
@@ -425,4 +286,34 @@ html, body {
 .error-content p {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
+}
+
+/* Стили для карточек */
+.card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Стили для секции О портале */
+.about-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Общие стили для контейнеров */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
