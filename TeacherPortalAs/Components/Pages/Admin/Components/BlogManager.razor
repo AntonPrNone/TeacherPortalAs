@@ -70,6 +70,9 @@
                 <label for="imageUrl">Ссылка на изображение:</label>
                 <input id="imageUrl" class="form-control" @bind="currentPost.ImageUrl" 
                        placeholder="https://example.com/image.jpg" />
+                <small class="form-text text-muted">
+                    Загрузите изображение на <a href="https://postimages.org/" target="_blank">postimages.org</a> и вставьте прямую ссылку
+                </small>
                 @if (!string.IsNullOrEmpty(currentPost.ImageUrl))
                 {
                     <div class="image-preview">
@@ -80,17 +83,17 @@
             
             <div class="form-group">
                 <label>Форматирование текста:</label>
-                <div class="formatting-toolbar">
-                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("h2"))" title="Заголовок">
+                <div class="formatting-buttons">
+                    <button type="button" class="format-btn" @onclick="@(e => InsertFormat("h2"))" title="Заголовок">
                         <i class="fas fa-heading"></i>
                     </button>
-                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("b"))" title="Жирный">
+                    <button type="button" class="format-btn" @onclick="@(e => InsertFormat("b"))" title="Жирный">
                         <i class="fas fa-bold"></i>
                     </button>
-                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("i"))" title="Курсив">
+                    <button type="button" class="format-btn" @onclick="@(e => InsertFormat("i"))" title="Курсив">
                         <i class="fas fa-italic"></i>
                     </button>
-                    <button type="button" class="toolbar-btn" @onclick="@(e => InsertFormat("ul"))" title="Список">
+                    <button type="button" class="format-btn" @onclick="@(e => InsertFormat("ul"))" title="Список">
                         <i class="fas fa-list-ul"></i>
                     </button>
                 </div>

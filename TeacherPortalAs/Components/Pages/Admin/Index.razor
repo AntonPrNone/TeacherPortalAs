@@ -24,15 +24,18 @@
             <div class="admin-nav">
                 <button class="nav-item @(currentSection == "subjects" ? "active" : "")" 
                         @onclick='() => currentSection = "subjects"'>
-                    Предметы
+                    <i class="fas fa-book"></i>
+                    <span>Предметы</span>
                 </button>
                 <button class="nav-item @(currentSection == "materials" ? "active" : "")" 
                         @onclick='() => currentSection = "materials"'>
-                    Материалы
+                    <i class="fas fa-file-alt"></i>
+                    <span>Материалы</span>
                 </button>
                 <button class="nav-item @(currentSection == "tests" ? "active" : "")" 
                         @onclick='() => currentSection = "tests"'>
-                    Тесты
+                    <i class="fas fa-tasks"></i>
+                    <span>Тесты</span>
                 </button>
                 <button class="nav-item @(currentSection == "blog" ? "active" : "")" 
                         @onclick='() => currentSection = "blog"'>

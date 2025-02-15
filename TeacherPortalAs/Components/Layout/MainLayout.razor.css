@@ -3,6 +3,12 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, transparent calc(100% - 52px), #ff000055 calc(100% - 52px), #ff000055 calc(100% - 50px), transparent calc(100% - 50px));
+    background-size: 25px 25px, 25px 25px, 100% 100%;
+    background-position: 0 0, 0 0, 0 0;
 }
 
 main {

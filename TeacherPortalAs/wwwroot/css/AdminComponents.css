@@ -164,54 +164,6 @@
     font-size: 1rem;
 }
 
-/* Стили для диалоговых окон */
-.dialog-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    overflow-y: auto;
-    z-index: 1000;
-}
-
-.dialog {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    margin: 20px auto;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.dialog h3 {
-    color: #2D3748;
-    margin-bottom: 1.5rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-.dialog-buttons {
-    position: sticky;
-    bottom: 0;
-    background: white;
-    padding: 15px 0 0;
-    border-top: 1px solid #eee;
-    margin-top: 15px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
 /* Общие стили для менеджеров */
 .manager-header {
     display: flex;
@@ -251,10 +203,6 @@
     }
 }
 
-.blog-dialog {
-    max-width: 800px;
-}
-
 /* Стили для превью изображения */
 .image-preview {
     margin-top: 1rem;
@@ -290,22 +238,44 @@
     object-fit: contain;
 }
 
-.dialog .form-group {
-    margin-bottom: 15px;
+/* Стили для кнопок форматирования текста */
+.formatting-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.format-btn {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    background: white;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+}
+
+.format-btn:hover {
+    background: #F8FAFC;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.format-btn:active {
+    background: var(--primary-color);
+    color: white;
 }
 
 textarea.form-control {
     resize: vertical;
-    min-height: 100px;
-    max-height: 300px;
+    height: 150px;
     line-height: 1.5;
     overflow-y: auto;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    backface-visibility: hidden;
-    transform: translateZ(0);
-    perspective: 1000;
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 

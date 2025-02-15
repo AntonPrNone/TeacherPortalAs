@@ -13,7 +13,6 @@
                 <span>✍️</span>
                 <span>📏</span>
                 <span>🔍</span>
-                <span></span>
                 <span>🎯</span>
                 <span>📊</span>
                 <span>🎨</span>
@@ -30,29 +29,20 @@
         </div>
 
         <div class="features-grid">
-            <div class="feature-card">
-                <i class="fas fa-book"></i>
-                <h3>Учебные материалы</h3>
-                <p>Доступ к обширной библиотеке образовательных ресурсов</p>
-            </div>
-
-            <div class="feature-card">
-                <i class="fas fa-tasks"></i>
-                <h3>Тесты и задания</h3>
-                <p>Интерактивные тесты для проверки знаний</p>
-            </div>
-
-            <div class="feature-card">
-                <i class="fas fa-users"></i>
-                <h3>Сообщество</h3>
-                <p>Общение и обмен опытом с коллегами</p>
-            </div>
-
-            <div class="feature-card">
-                <i class="fas fa-chart-line"></i>
-                <h3>Аналитика</h3>
-                <p>Отслеживание прогресса и статистика</p>
-            </div>
+            @foreach (var feature in features)
+            {
+                <div class="feature-card">
+                    <div class="feature-card-inner">
+                        <div class="feature-card-front">
+                            <i class="@feature.Icon"></i>
+                            <h3>@feature.Title</h3>
+                        </div>
+                        <div class="feature-card-back">
+                            <p>@feature.Description</p>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 
@@ -112,16 +102,50 @@
             <span>📓</span>
             <span>🎯</span>
             <span>📏</span>
-            <span>��</span>
-            <span>🎨</span>
+            <span>🎓</span>
             <span>🔬</span>
             <span>🧮</span>
-            <span>��</span>
-            <span>🎓</span>
-            <span>🔍</span>
+            <span>📐</span>
         </div>
         <h2>О портале</h2>
         <p>Этот образовательный портал создан для того, чтобы сделать процесс обучения более эффективным и интересным.</p>
         <p>Регулярно обновляемая база знаний, интерактивные материалы и современные подходы к обучению помогут как учителям, так и ученикам достичь лучших результатов в образовательном процессе.</p>
     </div>
 </div>
+
+@code {
+    private List<FeatureCard> features = new()
+    {
+        new FeatureCard 
+        { 
+            Icon = "fas fa-book",
+            Title = "Учебные материалы",
+            Description = "Доступ к обширной библиотеке образовательных ресурсов"
+        },
+        new FeatureCard 
+        { 
+            Icon = "fas fa-tasks",
+            Title = "Тесты и задания",
+            Description = "Интерактивные тесты для проверки знаний"
+        },
+        new FeatureCard 
+        { 
+            Icon = "fas fa-users",
+            Title = "Сообщество",
+            Description = "Общение и обмен опытом с коллегами"
+        },
+        new FeatureCard 
+        { 
+            Icon = "fas fa-chart-line",
+            Title = "Аналитика",
+            Description = "Отслеживание прогресса и статистика"
+        }
+    };
+
+    private class FeatureCard
+    {
+        public string Icon { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+}

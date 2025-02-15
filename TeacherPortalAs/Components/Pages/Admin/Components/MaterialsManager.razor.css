@@ -39,18 +39,6 @@
     will-change: auto !important;
 }
 
-.dialog-buttons {
-    position: sticky;
-    bottom: 0;
-    background: white;
-    padding: 15px 0 0;
-    border-top: 1px solid #eee;
-    margin-top: 15px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
 .preview-container {
     margin-top: 0.5rem;
     padding: 0.5rem;
