@@ -44,7 +44,6 @@ public class CustomSessionHandler : IGotrueSessionPersistence<Session>
         {
             if (_cachedSession != null) return _cachedSession;
 
-            // Возвращаем пустую сессию при старте
             return null;
         }
         catch (Exception ex)
@@ -125,9 +124,9 @@ public class Program
 
         builder.Services.AddSingleton(supabase);
 
-        builder.Services.AddScoped<ISubjectService, SubjectService>();
-        builder.Services.AddScoped<IMaterialService, MaterialService>();
-        builder.Services.AddScoped<IBlogService, BlogService>();
+        builder.Services.AddSingleton<ISubjectService, SubjectService>();
+        builder.Services.AddSingleton<IMaterialService, MaterialService>();
+        builder.Services.AddSingleton<IBlogService, BlogService>();
 
         var app = builder.Build();
 

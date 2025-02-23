@@ -8,7 +8,7 @@
 <div class="manager-container">
     <div class="manager-header">
         <h2>Управление материалами</h2>
-        <button class="btn btn-primary" @onclick="ShowDialog">Добавить материал</button>
+        <button class="btn btn-primary" @onclick="AddNewMaterial">Добавить материал</button>
     </div>
 
     @if (materials == null)
@@ -63,15 +63,12 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="subject">Предмет</label>
-                    <select id="subject" class="form-control" @bind="editingMaterial.SubjectId">
+                    <label for="subject">Предмет:</label>
+                    <select id="subject" class="form-control" @bind="tempSubjectId">
                         <option value="">Выберите предмет</option>
-                        @if (subjects != null)
+                        @foreach (var subject in subjects)
                         {
-                            @foreach (var subject in subjects)
-                            {
-                                <option value="@subject.Id">@subject.Name</option>
-                            }
+                            <option value="@subject.Id">@subject.Name</option>
                         }
                     </select>
                 </div>
@@ -99,6 +96,7 @@
     private List<Subject>? subjects;
     private bool showDialog;
     private Material editingMaterial = new();
+    private int tempSubjectId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,25 +105,56 @@
 
     private async Task LoadData()
     {
-        materials = await MaterialService.GetMaterialsAsync();
+        if (materials == null)
+        {
+            materials = await MaterialService.GetMaterialsAsync();
+        }
         subjects = await SubjectService.GetSubjectsAsync();
     }
 
-    private void ShowDialog()
+    private void ShowDialog(Material? material)
     {
-        editingMaterial = new();
+        if (material != null)
+        {
+            editingMaterial = new Material
+            {
+                Title = material.Title,
+                Content = material.Content,
+                SubjectId = material.SubjectId,
+                Created = material.Created,
+                Updated = material.Updated
+            };
+            tempSubjectId = material.SubjectId;
+        }
+        else
+        {
+            editingMaterial = new Material
+            {
+                Id = 0,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
+            tempSubjectId = 0;
+        }
         showDialog = true;
-        StateHasChanged();
     }
 
     private void EditMaterial(Material material)
     {
-        editingMaterial = material;
+        editingMaterial = new Material
+        {
+            Id = material.Id,
+            Title = material.Title,
+            Content = material.Content,
+            SubjectId = material.SubjectId,
+            Created = material.Created,
+            Updated = material.Updated
+        };
+        tempSubjectId = material.SubjectId;
         showDialog = true;
-        StateHasChanged();
     }
 
-    private async Task DeleteMaterial(int id)
+    private async Task DeleteMaterial(int? id)
     {
         if (await JS.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот материал?"))
         {
@@ -137,21 +166,41 @@
     private void CloseDialog()
     {
         showDialog = false;
-        StateHasChanged();
+        editingMaterial = new Material();
+        tempSubjectId = 0;
     }
 
     private async Task SaveMaterial()
     {
-        if (editingMaterial.Id == 0)
+        try 
         {
-            await MaterialService.CreateMaterialAsync(editingMaterial);
+            editingMaterial.SubjectId = tempSubjectId;
+            
+            if (editingMaterial.Id == 0) // Новый материал
+            {
+                var newMaterial = new Material
+                {
+                    Title = editingMaterial.Title,
+                    Content = editingMaterial.Content,
+                    SubjectId = editingMaterial.SubjectId,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow
+                };
+                await MaterialService.CreateMaterialAsync(newMaterial);
+            }
+            else // Обновление существующего
+            {
+                await MaterialService.UpdateMaterialAsync(editingMaterial);
+            }
+            
+            await LoadData();
+            CloseDialog();
         }
-        else
+        catch (Exception ex)
         {
-            await MaterialService.UpdateMaterialAsync(editingMaterial);
+            await JS.InvokeVoidAsync("alert", $"Ошибка при сохранении: {ex.Message}");
         }
-        await LoadData();
-        showDialog = false;
-        StateHasChanged();
     }
+
+    private void AddNewMaterial() => ShowDialog(null);
 } 

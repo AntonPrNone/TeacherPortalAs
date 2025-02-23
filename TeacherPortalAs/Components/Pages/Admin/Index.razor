@@ -1,7 +1,6 @@
 @page "/admin"
 @rendermode InteractiveWebAssembly
-
-<h1>Админ-панель</h1>
+@inherits ComponentBase
 
 @using TeacherPortalAs.Components.Pages.Admin.Components
 @using TeacherPortalAs.Services
@@ -35,15 +34,15 @@
                     <i class="fas fa-file-alt"></i>
                     <span>Материалы</span>
                 </button>
-                <button class="nav-item @(currentSection == "tests" ? "active" : "")" 
-                        @onclick='() => currentSection = "tests"'>
-                    <i class="fas fa-tasks"></i>
-                    <span>Тесты</span>
-                </button>
                 <button class="nav-item @(currentSection == "blog" ? "active" : "")" 
                         @onclick='() => currentSection = "blog"'>
                     <i class="fas fa-newspaper"></i>
                     Блог
+                </button>
+                <button class="nav-item @(currentSection == "tests" ? "active" : "")" 
+                        @onclick='() => currentSection = "tests"'>
+                    <i class="fas fa-tasks"></i>
+                    <span>Тесты</span>
                 </button>
             </div>
         </div>

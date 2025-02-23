@@ -6,7 +6,6 @@ namespace TeacherPortalAs.Models;
 [Table("material")]
 public class Material : BaseModel
 {
-    [Column("id")]
     [PrimaryKey("id")]
     public int Id { get; set; }
 

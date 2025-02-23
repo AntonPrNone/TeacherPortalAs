@@ -11,6 +11,9 @@ public class SubjectService : ISubjectService
 {
     private readonly Supabase.Client _supabaseClient;
     private readonly NavigationManager _navigationManager;
+    private List<Subject>? _cachedSubjects;
+
+    private void InvalidateCache() => _cachedSubjects = null;
 
     public SubjectService(Supabase.Client supabaseClient, NavigationManager navigationManager)
     {
@@ -29,12 +32,16 @@ public class SubjectService : ISubjectService
 
     public async Task<List<Subject>> GetSubjectsAsync()
     {
+        if (_cachedSubjects != null)
+            return _cachedSubjects;
+
         await EnsureAuthenticatedAsync();
         var response = await _supabaseClient
             .From<Subject>()
             .Get();
         
-        return response.Models;
+        _cachedSubjects = response.Models;
+        return _cachedSubjects;
     }
 
     public async Task<Subject> GetSubjectByIdAsync(int id)
@@ -54,6 +61,7 @@ public class SubjectService : ISubjectService
             .From<Subject>()
             .Insert(subject);
         
+        _cachedSubjects?.Add(response.Models.FirstOrDefault());
         return response.Models.FirstOrDefault();
     }
 
@@ -64,6 +72,14 @@ public class SubjectService : ISubjectService
             .From<Subject>()
             .Update(subject);
         
+        if (_cachedSubjects != null)
+        {
+            var index = _cachedSubjects.FindIndex(x => x.Id == subject.Id);
+            if (index != -1)
+            {
+                _cachedSubjects[index] = response.Models.FirstOrDefault();
+            }
+        }
         return response.Models.FirstOrDefault();
     }
 
@@ -75,6 +91,10 @@ public class SubjectService : ISubjectService
             .Where(x => x.Id == id)
             .Delete();
         
+        if (_cachedSubjects != null)
+        {
+            _cachedSubjects.RemoveAll(x => x.Id == id);
+        }
         return true;
     }
 } 

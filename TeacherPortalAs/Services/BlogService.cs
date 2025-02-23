@@ -1,5 +1,8 @@
 using Supabase;
 using TeacherPortalAs.Models;
+using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components;
+using System.Text.Json;
 
 namespace TeacherPortalAs.Services
 {
@@ -15,20 +18,26 @@ namespace TeacherPortalAs.Services
     public class BlogService : IBlogService
     {
         private readonly Client _supabase;
-        private const string TABLE_NAME = "blog_posts";
+        private List<BlogPost>? _cachedPosts;
 
-        public BlogService(Client supabase) => _supabase = supabase;
+        public BlogService(Client supabase)
+        {
+            _supabase = supabase;
+        }
 
         public async Task<List<BlogPost>> GetBlogPostsAsync(bool includeUnpublished = false)
         {
-            var query = _supabase.From<BlogPost>();
+            if (_cachedPosts != null)
+                return includeUnpublished 
+                    ? _cachedPosts 
+                    : _cachedPosts.Where(x => x.IsPublished).ToList();
+
+            var response = await _supabase.From<BlogPost>().Get();
+            _cachedPosts = response.Models;
             
-            if (!includeUnpublished)
-            {
-                return (await query.Get()).Models.Where(x => x.IsPublished).ToList();
-            }
-            
-            return (await query.Get()).Models;
+            return includeUnpublished 
+                ? _cachedPosts 
+                : _cachedPosts.Where(x => x.IsPublished).ToList();
         }
 
         public async Task<BlogPost?> GetBlogPostAsync(int id)
@@ -46,6 +55,7 @@ namespace TeacherPortalAs.Services
                 .From<BlogPost>()
                 .Insert(post);
             
+            _cachedPosts?.Add(response.Models.First());
             return response.Models.First();
         }
 

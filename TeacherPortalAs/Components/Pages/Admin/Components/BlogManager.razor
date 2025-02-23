@@ -103,7 +103,7 @@
 
             <div class="form-group">
                 <label>
-                    <input type="checkbox" @bind="currentPost.IsPublished" />
+                    <input type="checkbox" @bind="currentPost.IsPublished" @bind:after="HandlePublishStateChanged" />
                     Опубликовать
                 </label>
             </div>
@@ -189,5 +189,14 @@
         currentPost.Content = string.IsNullOrEmpty(currentPost.Content) 
             ? template 
             : currentPost.Content + "\n" + template;
+    }
+
+    private async Task HandlePublishStateChanged()
+    {
+        if (currentPost.Id > 0) // Только для существующих постов
+        {
+            await BlogService.UpdateBlogPostAsync(currentPost);
+            await LoadPosts();
+        }
     }
 } 
