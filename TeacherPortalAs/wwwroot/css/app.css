@@ -185,3 +185,7 @@ html, body {
 .form-text a:hover {
     text-decoration: underline;
 }
+
+h1:focus {
+    outline: none;
+}

@@ -4,6 +4,7 @@ using TeacherPortalAs.Services;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Interfaces;
 using Microsoft.JSInterop;
+using TeacherPortalAs.Components;
 
 namespace TeacherPortalAs;
 
