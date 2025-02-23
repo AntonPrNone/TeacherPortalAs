@@ -1,19 +1,35 @@
 using TeacherPortalAs.Models;
 using Supabase;
+using Microsoft.JSInterop;
+using System.Text.Json;
+using Supabase.Gotrue;
+using Microsoft.AspNetCore.Components;
 
 namespace TeacherPortalAs.Services;
 
 public class SubjectService : ISubjectService
 {
-    private readonly Client _supabaseClient;
+    private readonly Supabase.Client _supabaseClient;
+    private readonly NavigationManager _navigationManager;
 
-    public SubjectService(Client supabaseClient)
+    public SubjectService(Supabase.Client supabaseClient, NavigationManager navigationManager)
     {
         _supabaseClient = supabaseClient;
+        _navigationManager = navigationManager;
+    }
+
+    private async Task EnsureAuthenticatedAsync()
+    {
+        var session = await _supabaseClient.Auth.RetrieveSessionAsync();
+        if (session == null)
+        {
+            _navigationManager.NavigateTo("/admin/login");
+        }
     }
 
     public async Task<List<Subject>> GetSubjectsAsync()
     {
+        await EnsureAuthenticatedAsync();
         var response = await _supabaseClient
             .From<Subject>()
             .Get();
@@ -33,6 +49,7 @@ public class SubjectService : ISubjectService
 
     public async Task<Subject> CreateSubjectAsync(Subject subject)
     {
+        await EnsureAuthenticatedAsync();
         var response = await _supabaseClient
             .From<Subject>()
             .Insert(subject);
@@ -42,6 +59,7 @@ public class SubjectService : ISubjectService
 
     public async Task<Subject> UpdateSubjectAsync(Subject subject)
     {
+        await EnsureAuthenticatedAsync();
         var response = await _supabaseClient
             .From<Subject>()
             .Update(subject);
@@ -51,6 +69,7 @@ public class SubjectService : ISubjectService
 
     public async Task<bool> DeleteSubjectAsync(int id)
     {
+        await EnsureAuthenticatedAsync();
         await _supabaseClient
             .From<Subject>()
             .Where(x => x.Id == id)

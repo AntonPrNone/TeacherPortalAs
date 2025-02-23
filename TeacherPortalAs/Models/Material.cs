@@ -7,13 +7,11 @@ namespace TeacherPortalAs.Models;
 public class Material : BaseModel
 {
     [Column("id")]
+    [PrimaryKey("id")]
     public int Id { get; set; }
 
     [Column("title")]
     public string Title { get; set; } = string.Empty;
-
-    [Column("description")]
-    public string Description { get; set; } = string.Empty;
 
     [Column("content")]
     public string Content { get; set; } = string.Empty;

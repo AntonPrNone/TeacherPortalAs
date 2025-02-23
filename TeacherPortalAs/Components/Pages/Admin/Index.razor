@@ -6,10 +6,13 @@
 @using TeacherPortalAs.Components.Pages.Admin.Components
 @using TeacherPortalAs.Services
 @using TeacherPortalAs.Models
+@using Supabase.Gotrue
+@using Supabase.Gotrue.Interfaces
 @inject Supabase.Client SupabaseClient
 @inject NavigationManager NavigationManager
 @inject ISubjectService SubjectService
 @inject IJSRuntime JS
+@inject IGotrueSessionPersistence<Session> SessionHandler
 
 <PageTitle>Админ-панель</PageTitle>
 
@@ -70,30 +73,20 @@
     
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var session = await SupabaseClient.Auth.RetrieveSessionAsync();
-            if (session?.User == null)
-            {
-                NavigationManager.NavigateTo("/admin/login");
-            }
-        }
-        catch
+        var session = await SupabaseClient.Auth.RetrieveSessionAsync();
+        if (session == null)
         {
             NavigationManager.NavigateTo("/admin/login");
+            return;
         }
+        
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleLogout()
     {
-        try 
-        {
-            await SupabaseClient.Auth.SignOut();
-            NavigationManager.NavigateTo("/admin/login", true);
-        }
-        catch (Exception ex)
-        {
-            await JS.InvokeVoidAsync("alert", $"Ошибка при выходе: {ex.Message}");
-        }
+        await ((CustomSessionHandler)SessionHandler).DestroySessionAsync();
+        await SupabaseClient.Auth.SignOut();
+        NavigationManager.NavigateTo("/admin/login");
     }
 } 

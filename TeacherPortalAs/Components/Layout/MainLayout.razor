@@ -4,14 +4,14 @@
     <main>
         <NavMenu />
         <article class="content">
-            @ChildContent
+            @Body
         </article>
     </main>
 </div>
 
 @code {
     [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    public RenderFragment? Body { get; set; }
 
     public MainLayout()
     {

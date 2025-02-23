@@ -46,6 +46,13 @@
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="js/site.js"></script>
+    <script>
+        window.localStorage = {
+            getItemSync: function(key) {
+                return localStorage.getItem(key);
+            }
+        };
+    </script>
 </body>
 
 </html>

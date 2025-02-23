@@ -3,6 +3,9 @@
 @inject Supabase.Client SupabaseClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@using Supabase.Gotrue
+@using TeacherPortalAs.Services
+@using TeacherPortalAs
 
 <div class="login-container">
     <div class="login-card">
@@ -18,27 +21,59 @@
             <input type="password" id="password" class="form-control" @bind="password" />
         </div>
         
-        <button class="btn btn-primary" @onclick="HandleLogin">Войти</button>
+        <button class="btn btn-primary" @onclick="HandleLogin" disabled="@isLoggingIn">
+            @if (isLoggingIn)
+            {
+                <span>Вход...</span>
+            }
+            else
+            {
+                <span>Войти</span>
+            }
+        </button>
     </div>
 </div>
 
 @code {
     private string email = "";
     private string password = "";
+    private bool isLoggingIn = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var session = await SupabaseClient.Auth.RetrieveSessionAsync();
+        if (session != null)
+        {
+            NavigationManager.NavigateTo("/admin");
+        }
+    }
 
     private async Task HandleLogin()
     {
+        if (isLoggingIn) return;
+        isLoggingIn = true;
+        
         try
         {
             var response = await SupabaseClient.Auth.SignInWithPassword(email, password);
             if (response?.User != null)
             {
+                await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.ACCESS_TOKEN_KEY, response.AccessToken);
+                await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.REFRESH_TOKEN_KEY, response.RefreshToken);
+                
+                await SupabaseClient.Auth.SetSession(response.AccessToken, response.RefreshToken);
+                
                 NavigationManager.NavigateTo("/admin");
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Login error: {ex.Message}");
             await JS.InvokeVoidAsync("alert", $"Ошибка при входе: {ex.Message}");
+        }
+        finally
+        {
+            isLoggingIn = false;
         }
     }
 } 

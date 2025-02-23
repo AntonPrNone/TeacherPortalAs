@@ -17,10 +17,7 @@ namespace TeacherPortalAs.Services
         private readonly Client _supabase;
         private const string TABLE_NAME = "blog_posts";
 
-        public BlogService(Client supabase)
-        {
-            _supabase = supabase;
-        }
+        public BlogService(Client supabase) => _supabase = supabase;
 
         public async Task<List<BlogPost>> GetBlogPostsAsync(bool includeUnpublished = false)
         {

@@ -1,41 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @using TeacherPortalAs.Components.Layout
 
-<ErrorBoundary>
-    <ChildContent>
-        <Router AppAssembly="@typeof(App).Assembly">
-            <Found Context="routeData">
-                <MainLayout>
-                    <RouteView RouteData="@routeData" />
-                </MainLayout>
-                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-            </Found>
-            <NotFound>
-                <PageTitle>Not found</PageTitle>
-                <MainLayout>
-                    <div class="alert alert-warning">
-                        <h3>Страница не найдена</h3>
-                        <p>Запрошенная страница не существует.</p>
-                    </div>
-                </MainLayout>
-            </NotFound>
-        </Router>
-    </ChildContent>
-    <ErrorContent Context="exception">
-        <div class="error-container">
-            <div class="error-content">
-                <i class="fas fa-exclamation-circle error-icon"></i>
-                <h3>Произошла ошибка</h3>
-                <p>@exception.Message</p>
-                <button class="btn btn-primary" @onclick="() => Navigation.NavigateTo(Navigation.Uri, forceLoad: true)">
-                    Перезагрузить страницу
-                </button>
-            </div>
-        </div>
-    </ErrorContent>
-</ErrorBoundary>
-
-@code {
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
-}
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Страница не найдена</p>
+        </LayoutView>
+    </NotFound>
+</Router>
