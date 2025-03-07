@@ -1,0 +1,93 @@
+@page "/blog/{Id:int}"
+@using TeacherPortalAs.Services
+@using TeacherPortalAs.Models
+@rendermode InteractiveWebAssembly
+@inject IBlogService BlogService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@(post?.Title ?? "Загрузка...")</PageTitle>
+
+<div class="container mt-2">
+    @if (post == null)
+    {
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="mt-2">Загружаем пост...</p>
+        </div>
+    }
+    else
+    {
+        <div class="blog-post-container">
+            <div class="blog-post-header">
+                <button class="btn btn-link back-button mb-3" @onclick="GoBack">
+                    <i class="fas fa-arrow-left me-2"></i> Вернуться к списку
+                </button>
+                <h1 class="blog-post-title">@post.Title</h1>
+                <div class="blog-post-meta">
+                    <span class="date">
+                        <i class="fas fa-calendar-alt me-1"></i> 
+                        @post.CreatedAt.ToString("dd MMMM yyyy")
+                    </span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(post.ImageUrl))
+            {
+                <div class="blog-post-image">
+                    <img src="@post.ImageUrl" alt="@post.Title" class="img-fluid rounded" />
+                </div>
+            }
+
+            <div class="blog-post-content">
+                @((MarkupString)post.Content)
+            </div>
+
+            <div class="blog-post-footer">
+                <button class="btn btn-primary" @onclick="GoBack">
+                    <i class="fas fa-arrow-left me-2"></i> Вернуться к списку
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Models.BlogPost? post;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPost();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPost();
+    }
+
+    private async Task LoadPost()
+    {
+        try
+        {
+            post = await BlogService.GetBlogPostAsync(Id);
+            
+            if (post == null)
+            {
+                NavigationManager.NavigateTo("/blog");
+            }
+        }
+        catch
+        {
+            NavigationManager.NavigateTo("/blog");
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/blog");
+    }
+} 

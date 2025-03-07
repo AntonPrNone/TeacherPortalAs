@@ -1,24 +1,28 @@
 using Postgrest.Models;
 using Postgrest.Attributes;
+using System;
 
-[Table("blog_posts")]
-public class BlogPost : BaseModel
+namespace TeacherPortalAs.Models
 {
-    [PrimaryKey("id", false)]
-    public int Id { get; set; }
+    [Table("blog_posts")]
+    public class BlogPost : BaseModel
+    {
+        [PrimaryKey("id")]
+        public int Id { get; set; }
 
-    [Column("title")]
-    public string Title { get; set; } = string.Empty;
+        [Column("title")]
+        public string Title { get; set; } = string.Empty;
 
-    [Column("content")]
-    public string Content { get; set; } = string.Empty;
+        [Column("content")]
+        public string Content { get; set; } = string.Empty;
 
-    [Column("image_url")]
-    public string? ImageUrl { get; set; }
+        [Column("image_url")]
+        public string ImageUrl { get; set; } = string.Empty;
 
-    [Column("created_at")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-    [Column("is_published")]
-    public bool IsPublished { get; set; } = true;
+        [Column("is_published")]
+        public bool IsPublished { get; set; } = false;
+    }
 } 

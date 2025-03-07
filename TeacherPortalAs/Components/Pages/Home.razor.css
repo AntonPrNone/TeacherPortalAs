@@ -1,5 +1,6 @@
 .home-container {
     padding: 2rem;
+    padding-bottom: 2rem;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -8,16 +9,15 @@
     text-align: center;
     padding: 4rem 1rem;
     margin-bottom: 4rem;
-    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(226,232,255,0.98) 100%),
-                linear-gradient(45deg, rgba(79, 70, 229, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(226,232,255,0.98) 100%);
     border-radius: 1.5rem;
-    box-shadow: 
-        0 10px 30px rgba(79, 70, 229, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.05),
-        0 0 0 1px rgba(255, 255, 255, 0.8) inset;
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 
+        0 20px 40px rgba(79, 70, 229, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.05);
+    transform-style: preserve-3d;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .welcome-section:hover {
@@ -204,15 +204,15 @@
     text-align: center;
     padding: 4rem 1rem;
     margin-bottom: 4rem;
-    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(226,232,255,0.98) 100%),
-                linear-gradient(45deg, rgba(79, 70, 229, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(226,232,255,0.98) 100%);
     border-radius: 1.5rem;
-    box-shadow: 
-        0 10px 30px rgba(79, 70, 229, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.05),
-        0 0 0 1px rgba(255, 255, 255, 0.8) inset;
     position: relative;
     overflow: hidden;
+    box-shadow: 
+        0 20px 40px rgba(79, 70, 229, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.05);
+    transform-style: preserve-3d;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .welcome-pattern,
@@ -389,7 +389,8 @@
     line-height: 1.5;
 }
 
-.about-section {
+/* Совершенно новая секция с анимацией зума */
+.about-section-with-zoom {
     background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(226,232,255,0.95) 100%);
     border-radius: 1.5rem;
     padding: 3rem;
@@ -399,25 +400,19 @@
     box-shadow: 
         0 20px 40px rgba(79, 70, 229, 0.1),
         0 8px 16px rgba(0, 0, 0, 0.05);
-    animation: fadeIn 0.5s ease-out 0.6s forwards;
-    opacity: 0;
     cursor: pointer;
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
-    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform: scale(1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.about-section:hover {
-    transform: translate3d(0, -10px, 0);
+.about-section-with-zoom:hover {
+    transform: scale(1.01);
     box-shadow: 
         0 25px 45px rgba(79, 70, 229, 0.15),
         0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
-.about-section h2 {
+.about-section-with-zoom h2 {
     font-size: 1.75rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
@@ -425,124 +420,56 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    
+    animation: zoomIn 0.5s ease-out forwards;
+    opacity: 0;
     position: relative;
     z-index: 2;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.about-section p {
+.about-section-with-zoom p {
     color: #4A5568;
     line-height: 1.7;
     margin-bottom: 1.5rem;
     font-size: 1.1rem;
+    
+    animation: zoomIn 0.5s ease-out 0.1s forwards;
+    opacity: 0;
     position: relative;
     z-index: 2;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.about-section p:last-child {
+.about-section-with-zoom p:last-child {
     margin-bottom: 0;
 }
 
-@media (max-width: 480px) {
-    .welcome-section,
-    .about-section {
-        padding: 1.5rem;
-        margin: 1rem;
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
     }
-
-    .main-title {
-        font-size: 1.5rem;
-    }
-
-    .subtitle {
-        font-size: 0.9rem;
-    }
-
-    .stats-grid {
-        padding: 0 1rem;
-    }
-
-    .stat-card {
-        padding: 1.5rem;
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
 }
 
-/* Мобильные устройства */
-@media (max-width: 480px) {
-    .welcome-section {
-        padding: 2rem 1rem;
-        margin: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .main-title {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .subtitle {
-        font-size: 0.9rem;
-    }
-
-        .subtitle br {
-            display: none;
-        }
-
-    .stats-grid {
-        gap: 1rem;
-        padding: 0 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-        padding: 1.25rem;
-        gap: 1rem;
-    }
-
-    .stat-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1.25rem;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
-    }
-
-    .stat-label {
-        font-size: 0.9rem;
-    }
-
-    .stat-description {
-        font-size: 0.85rem;
-    }
-
-    .about-section {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
+.stats-grid {
+    animation: fadeInUp 0.5s ease-out 0.3s forwards;
+    opacity: 0;
 }
 
-/* Очень маленькие экраны */
-@media (max-width: 360px) {
-    .welcome-section,
-    .about-section {
-        margin: 0.5rem;
-        padding: 1rem;
-    }
-
-    .stats-grid {
-        padding: 0 0.5rem;
-    }
-
-    .stat-card {
-        padding: 1rem;
-    }
-}
+.stat-card:nth-child(1) { --delay: 0.0s; }
+.stat-card:nth-child(2) { --delay: 0.05s; }
+.stat-card:nth-child(3) { --delay: 0.1s; }
+.stat-card:nth-child(4) { --delay: 0.15s; }
 
 /* Общий стиль для всех градиентных текстов */
 .main-title,
 .stat-value,
-.about-section h2 {
+.about-section-with-zoom h2 {
     cursor: text;
     color: #4F46E5; /* Fallback цвет */
     width: 100%; /* Для блочных элементов */
@@ -602,8 +529,8 @@
 .stat-value,
 .stat-label,
 .stat-description,
-.about-section h2,
-.about-section p {
+.about-section-with-zoom h2,
+.about-section-with-zoom p {
     position: relative;
     z-index: 2;
     user-select: text;
@@ -611,7 +538,7 @@
 
 /* Убедимся, что контейнеры имеют правильное позиционирование */
 .welcome-section,
-.about-section {
+.about-section-with-zoom {
     position: relative;
     overflow: hidden;
 }
@@ -619,8 +546,8 @@
 /* Убедимся, что контент находится поверх паттерна */
 .welcome-section h1,
 .welcome-section p,
-.about-section h2,
-.about-section p {
+.about-section-with-zoom h2,
+.about-section-with-zoom p {
     position: relative;
     z-index: 1;
 }
@@ -672,18 +599,32 @@
 .pattern-background span:nth-child(14) { top: 90%; left: 70%; }
 .pattern-background span:nth-child(15) { top: 35%; left: 90%; }
 
-/* Разная скорость анимации */
+/* Ускоряем анимацию фоновых эмодзи */
 .pattern-background span:nth-child(odd) {
-    animation-duration: 12s;
+    animation-duration: 4s; /* Было 12s */
 }
 
 .pattern-background span:nth-child(3n) {
-    animation-duration: 15s;
+    animation-duration: 6s; /* Было 15s */
 }
 
 .pattern-background span:nth-child(3n+1) {
-    animation-duration: 10s;
+    animation-duration: 5s; /* Было 10s */
 }
+
+/* Более энергичная анимация плавания */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    25% { transform: translateY(-15px) rotate(7deg); }
+    50% { transform: translateY(-30px) rotate(3deg); }
+    75% { transform: translateY(-15px) rotate(-3deg); }
+}
+
+/* Эти же настройки применим к декорациям */
+.decoration:nth-child(1) { top: 10%; left: 5%; animation: float 4s ease-in-out infinite; }
+.decoration:nth-child(2) { top: 20%; right: 10%; animation: float 3s ease-in-out infinite 0.5s; }
+.decoration:nth-child(3) { bottom: 15%; left: 15%; animation: float 5s ease-in-out infinite 0.2s; }
+.decoration:nth-child(4) { bottom: 25%; right: 15%; animation: float 3.5s ease-in-out infinite 0.7s; }
 
 .background-decorations {
     position: absolute;
@@ -732,8 +673,3 @@
 .stat-card:nth-child(2) { --delay: 0.05s; }
 .stat-card:nth-child(3) { --delay: 0.1s; }
 .stat-card:nth-child(4) { --delay: 0.15s; }
-
-.about-section {
-    animation: fadeIn 0.5s ease-out 0.6s forwards;
-    opacity: 0;
-}

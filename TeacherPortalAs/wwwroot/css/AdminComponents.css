@@ -349,10 +349,17 @@ textarea.form-control:focus {
     background: #F8FAFC;
     color: #4A5568;
     font-weight: 600;
+    text-align: center;
 }
 
-.actions-cell {
+/* Класс для заголовка столбца действий */
+th.actions-header {
     text-align: right;
+}
+
+/* Класс для ячеек с действиями */
+.actions-cell {
+    text-align: right !important;
     white-space: nowrap;
 }
 
@@ -385,4 +392,73 @@ textarea.form-control:focus {
 
 .btn-delete:hover {
     background: var(--danger-hover);
+}
+
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.dialog {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 650px;
+    padding: 1.5rem;
+    z-index: 1001;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.blog-dialog {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.dialog-buttons {
+    margin-top: auto;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 1rem 0 0;
+    z-index: 5;
+}
+
+.content-editor {
+    resize: vertical;
+    min-height: 150px;
+    max-height: 400px;
+}
+
+/* Стиль для кнопок добавления, чтобы соответствовать кнопкам действий */
+.manager-header .btn-add {
+    font-size: 1rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    line-height: 1.5;
+    text-transform: none;
+}
+
+.manager-header .btn-add i {
+    font-size: 1rem;
 } 

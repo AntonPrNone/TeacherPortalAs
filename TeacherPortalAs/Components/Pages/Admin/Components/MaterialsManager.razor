@@ -7,8 +7,10 @@
 
 <div class="manager-container">
     <div class="manager-header">
-        <h2>Управление материалами</h2>
-        <button class="btn btn-primary" @onclick="AddNewMaterial">Добавить материал</button>
+        <h2>Управление учебными материалами</h2>
+        <button class="btn btn-primary btn-add" @onclick="ShowAddDialog">
+            <i class="fas fa-plus me-1"></i>Добавить материал
+        </button>
     </div>
 
     @if (materials == null)
@@ -202,5 +204,5 @@
         }
     }
 
-    private void AddNewMaterial() => ShowDialog(null);
+    private void ShowAddDialog() => ShowDialog(null);
 } 

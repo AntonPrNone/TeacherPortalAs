@@ -1,54 +1,156 @@
 @page "/blog"
 @using TeacherPortalAs.Services
 @using TeacherPortalAs.Models
-@inject IBlogService BlogService
 @rendermode InteractiveWebAssembly
+@inject IBlogService BlogService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Блог</PageTitle>
 
 <div class="blog-container">
     <h1>Блог</h1>
+    <p class="lead">Последние статьи и новости из мира образования</p>
+    
+    <div class="view-switcher">
+        <button type="button" class="btn @(isGridView ? "btn-primary" : "btn-outline-primary")" 
+                @onclick="() => SwitchView(true)" title="Сетка">
+            <i class="fas fa-th-large"></i>
+        </button>
+        <button type="button" class="btn @(!isGridView ? "btn-primary" : "btn-outline-primary")" 
+                @onclick="() => SwitchView(false)" title="Список">
+            <i class="fas fa-list"></i>
+        </button>
+    </div>
 
     @if (posts == null)
     {
-        <div class="loading">Загрузка...</div>
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="mt-2">Загружаем записи блога...</p>
+        </div>
     }
     else if (!posts.Any())
     {
-        <div class="no-posts">
-            <p>Пока нет опубликованных постов</p>
+        <div class="alert alert-info">
+            Записей пока нет. Заходите позже!
         </div>
     }
     else
     {
-        <div class="posts-grid">
-            @foreach (var post in posts.OrderByDescending(p => p.CreatedAt))
-            {
-                <article class="post-card">
-                    @if (!string.IsNullOrEmpty(post.ImageUrl))
-                    {
-                        <div class="post-image">
-                            <img src="@post.ImageUrl" alt="@post.Title" />
-                        </div>
-                    }
-                    <div class="post-content">
-                        <h2>@post.Title</h2>
-                        <div class="post-date">
-                            @post.CreatedAt.ToString("dd.MM.yyyy")
-                        </div>
-                        <div class="post-text">
-                            @((MarkupString)post.Content)
-                        </div>
+        @if (isGridView)
+        {
+            <!-- Отображение в виде сетки -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="gridView">
+                @foreach (var post in posts)
+                {
+                    <div class="col">
+                        <a href="/blog/@post.Id" class="card-link">
+                            <div class="card h-100 blog-card">
+                                @if (!string.IsNullOrEmpty(post.ImageUrl))
+                                {
+                                    <div class="card-img-container">
+                                        <img src="@post.ImageUrl" class="card-img-top" alt="@post.Title">
+                                    </div>
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@post.Title</h5>
+                                    <p class="card-text text-muted">
+                                        <small>@post.CreatedAt.ToString("dd.MM.yyyy")</small>
+                                    </p>
+                                    @if (!string.IsNullOrEmpty(post.Content))
+                                    {
+                                        <div class="card-content-preview">
+                                            @((MarkupString)GetPreviewContent(post.Content))
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </article>
-            }
-        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- Отображение в виде списка -->
+            <div class="blog-list" id="listView">
+                @foreach (var post in posts)
+                {
+                    <a href="/blog/@post.Id" class="card-link">
+                        <div class="card mb-4 blog-list-item">
+                            <div class="row g-0">
+                                @if (!string.IsNullOrEmpty(post.ImageUrl))
+                                {
+                                    <div class="col-md-4 list-img-container">
+                                        <img src="@post.ImageUrl" class="img-fluid rounded-start" alt="@post.Title">
+                                    </div>
+                                }
+                                <div class="@(string.IsNullOrEmpty(post.ImageUrl) ? "col-md-12" : "col-md-8")">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@post.Title</h5>
+                                        <p class="card-text text-muted">
+                                            <small>@post.CreatedAt.ToString("dd.MM.yyyy")</small>
+                                        </p>
+                                        @if (!string.IsNullOrEmpty(post.Content))
+                                        {
+                                            <div class="card-content-preview">
+                                                @((MarkupString)GetPreviewContent(post.Content))
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
     }
 </div>
 
 @code {
-    private List<BlogPost>? posts;
-
+    private List<Models.BlogPost>? posts;
+    private bool isGridView = true; // По умолчанию отображение в виде сетки
+    
     protected override async Task OnInitializedAsync()
     {
         posts = await BlogService.GetBlogPostsAsync();
+    }
+    
+    private async Task SwitchView(bool gridView)
+    {
+        if (isGridView == gridView) return; // Если вид не изменился, ничего не делаем
+        
+        // Сначала устанавливаем новый вид
+        isGridView = gridView;
+        
+        // Даем время для перерисовки и затем добавляем анимацию
+        await Task.Delay(10);
+        string viewId = gridView ? "gridView" : "listView";
+        await JSRuntime.InvokeVoidAsync("animateViewChange", viewId);
+    }
+    
+    private string GetPreviewContent(string html)
+    {
+        // Вместо удаления HTML-тегов возвращаем HTML напрямую
+        // для использования с MarkupString
+        int maxLength = 150; // Увеличим максимальную длину для учета тегов
+        
+        if (html.Length <= maxLength)
+            return html;
+        
+        // Обрезаем контент, стараясь не разорвать HTML-теги
+        int safeEndPoint = html.LastIndexOf("</", maxLength);
+        if (safeEndPoint > 0) {
+            int closingTag = html.IndexOf(">", safeEndPoint);
+            if (closingTag > 0) {
+                return html.Substring(0, closingTag + 1) + "...";
+            }
+        }
+        
+        // Если не нашли подходящий закрывающий тег, обрезаем как обычно
+        return html.Substring(0, maxLength) + "...";
     }
 } 

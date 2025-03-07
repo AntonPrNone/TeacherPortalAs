@@ -189,3 +189,20 @@ html, body {
 h1:focus {
     outline: none;
 }
+
+/* Глобальное правило для увеличения расстояния между содержимым и футером */
+main {
+    min-height: calc(100vh - 350px); /* Примерная высота, учитывающая футер и навигацию */
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    margin-bottom: 2rem; /* Уменьшаем с 3rem до 2rem для единого стиля */
+}
+
+/* Фикс для случаев, когда футер "наезжает" на контент */
+footer {
+    margin-top: auto;
+}

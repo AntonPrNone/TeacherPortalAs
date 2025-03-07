@@ -9,7 +9,9 @@
 <div class="manager-container">
     <div class="manager-header">
         <h2>Управление предметами</h2>
-        <button class="btn btn-primary" @onclick="() => ShowDialog(null)">Добавить предмет</button>
+        <button class="btn btn-primary btn-add" @onclick="() => ShowDialog(null)">
+            <i class="fas fa-plus me-1"></i>Добавить предмет
+        </button>
     </div>
 
     @if (subjects == null)

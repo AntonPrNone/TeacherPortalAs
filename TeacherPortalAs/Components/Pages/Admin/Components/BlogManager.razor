@@ -11,7 +11,9 @@
 <div class="manager-container">
     <div class="manager-header">
         <h2>Управление блогом</h2>
-        <button class="btn btn-primary" @onclick="() => ShowDialog(null)">Добавить пост</button>
+        <button class="btn btn-primary btn-add" @onclick="() => ShowDialog(null)">
+            <i class="fas fa-plus me-1"></i>Добавить пост
+        </button>
     </div>
 
     @if (posts == null)
@@ -27,7 +29,7 @@
                         <th>Заголовок</th>
                         <th>Дата создания</th>
                         <th>Статус</th>
-                        <th>Действия</th>
+                        <th class="actions-header">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -117,25 +119,25 @@
 }
 
 @code {
-    private List<BlogPost>? posts;
+    private List<Models.BlogPost>? posts;
     private bool showDialog;
-    private BlogPost currentPost = new();
+    private Models.BlogPost currentPost = new();
 
     protected override async Task OnInitializedAsync()
     {
         posts = await BlogService.GetBlogPostsAsync(includeUnpublished: true);
     }
 
-    private void ShowDialog(BlogPost? post)
+    private void ShowDialog(Models.BlogPost? post)
     {
-        currentPost = post ?? new BlogPost();
+        currentPost = post ?? new Models.BlogPost();
         showDialog = true;
     }
 
     private void CloseDialog()
     {
         showDialog = false;
-        currentPost = new();
+        currentPost = new Models.BlogPost();
     }
 
     private async Task LoadPosts()
