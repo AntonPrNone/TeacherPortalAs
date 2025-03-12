@@ -13,6 +13,7 @@ namespace TeacherPortalAs.Services
         Task<BlogPost> CreateBlogPostAsync(BlogPost post);
         Task<BlogPost> UpdateBlogPostAsync(BlogPost post);
         Task DeleteBlogPostAsync(int id);
+        Task<List<BlogPost>> SearchBlogPostsAsync(string query, bool searchInContent = false);
     }
 
     public class BlogService : IBlogService
@@ -23,6 +24,11 @@ namespace TeacherPortalAs.Services
         public BlogService(Client supabase)
         {
             _supabase = supabase;
+        }
+
+        private void InvalidateCache()
+        {
+            _cachedPosts = null;
         }
 
         public async Task<List<BlogPost>> GetBlogPostsAsync(bool includeUnpublished = false)
@@ -55,7 +61,7 @@ namespace TeacherPortalAs.Services
                 .From<BlogPost>()
                 .Insert(post);
             
-            _cachedPosts?.Add(response.Models.First());
+            InvalidateCache();
             return response.Models.First();
         }
 
@@ -66,6 +72,7 @@ namespace TeacherPortalAs.Services
                 .Where(x => x.Id == post.Id)
                 .Update(post);
             
+            InvalidateCache();
             return response.Models.First();
         }
 
@@ -75,6 +82,21 @@ namespace TeacherPortalAs.Services
                 .From<BlogPost>()
                 .Where(x => x.Id == id)
                 .Delete();
+            
+            InvalidateCache();
+        }
+
+        public async Task<List<BlogPost>> SearchBlogPostsAsync(string query, bool searchInContent = false)
+        {
+            var posts = await GetBlogPostsAsync();
+            
+            if (string.IsNullOrWhiteSpace(query))
+                return posts;
+        
+            return posts.Where(post =>
+                post.Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                (searchInContent && post.Content.Contains(query, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
         }
     }
 } 

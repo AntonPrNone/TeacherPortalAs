@@ -86,15 +86,31 @@ public class SubjectService : ISubjectService
     public async Task<bool> DeleteSubjectAsync(int id)
     {
         await EnsureAuthenticatedAsync();
-        await _supabaseClient
-            .From<Subject>()
-            .Where(x => x.Id == id)
-            .Delete();
         
-        if (_cachedSubjects != null)
+        try 
         {
-            _cachedSubjects.RemoveAll(x => x.Id == id);
+            // Сначала удаляем все материалы, связанные с предметом
+            await _supabaseClient
+                .From<Material>()
+                .Where(x => x.SubjectId == id)
+                .Delete();
+            
+            // Затем удаляем сам предмет
+            await _supabaseClient
+                .From<Subject>()
+                .Where(x => x.Id == id)
+                .Delete();
+            
+            if (_cachedSubjects != null)
+            {
+                _cachedSubjects.RemoveAll(x => x.Id == id);
+            }
+            return true;
         }
-        return true;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting subject: {ex.Message}");
+            throw;
+        }
     }
 } 

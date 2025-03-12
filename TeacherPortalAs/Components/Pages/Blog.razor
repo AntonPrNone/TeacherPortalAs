@@ -11,6 +11,34 @@
     <h1>Блог</h1>
     <p class="lead">Последние статьи и новости из мира образования</p>
     
+    <!-- Добавляем поисковую панель -->
+    <div class="search-panel">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Поиск по блогу..." 
+                @bind-value="searchQuery" 
+                @bind-value:event="oninput"
+                @onkeyup="HandleSearch" />
+            @if (!string.IsNullOrEmpty(searchQuery))
+            {
+                <button class="clear-search" @onclick="ClearSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            }
+        </div>
+        <div class="search-options">
+            <label class="search-option">
+                <input type="checkbox" 
+                       @bind="searchInContent" 
+                       @onclick="HandleSearch" />
+                Искать в содержимом
+            </label>
+        </div>
+    </div>
+    
     <div class="view-switcher">
         <button type="button" class="btn @(isGridView ? "btn-primary" : "btn-outline-primary")" 
                 @onclick="() => SwitchView(true)" title="Сетка">
@@ -113,6 +141,8 @@
 @code {
     private List<Models.BlogPost>? posts;
     private bool isGridView = true; // По умолчанию отображение в виде сетки
+    private string searchQuery = "";
+    private bool searchInContent = true;
     
     protected override async Task OnInitializedAsync()
     {
@@ -152,5 +182,29 @@
         
         // Если не нашли подходящий закрывающий тег, обрезаем как обычно
         return html.Substring(0, maxLength) + "...";
+    }
+    
+    private async Task HandleSearch()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            // Если поиск пустой, показываем все посты
+            posts = await BlogService.GetBlogPostsAsync();
+        }
+        else
+        {
+            // Фильтруем посты в зависимости от настроек поиска
+            posts = await BlogService.GetBlogPostsAsync();
+            posts = posts.Where(post =>
+                (post.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                (searchInContent && post.Content.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+        }
+    }
+    
+    private async Task ClearSearch()
+    {
+        searchQuery = "";
+        await HandleSearch();
     }
 } 

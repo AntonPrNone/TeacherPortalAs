@@ -27,6 +27,8 @@ html, body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
+    flex: 1;
+    margin-bottom: 0;
 }
 
 /* Базовые стили кнопок */
@@ -195,11 +197,6 @@ main {
     min-height: calc(100vh - 350px); /* Примерная высота, учитывающая футер и навигацию */
     display: flex;
     flex-direction: column;
-}
-
-.container {
-    flex: 1;
-    margin-bottom: 2rem; /* Уменьшаем с 3rem до 2rem для единого стиля */
 }
 
 /* Фикс для случаев, когда футер "наезжает" на контент */

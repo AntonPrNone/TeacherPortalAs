@@ -151,7 +151,8 @@
 
     private async Task DeleteSubject(int id)
     {
-        if (await JS.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот предмет?"))
+        if (await JS.InvokeAsync<bool>("confirm", 
+            "Вы уверены, что хотите удалить этот предмет? Все связанные материалы также будут удалены."))
         {
             try
             {
