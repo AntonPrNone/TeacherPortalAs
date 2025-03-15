@@ -1,0 +1,205 @@
+@page "/tests"
+@using TeacherPortalAs.Services
+@using TeacherPortalAs.Models
+@rendermode InteractiveWebAssembly
+@inject ITestService TestService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Тесты</PageTitle>
+
+<div class="tests-container">
+    <h1>Тесты</h1>
+    <div class="header-flex">
+        <p class="lead mb-0">Интерактивные тесты для проверки знаний</p>
+        <div class="view-switcher">
+            <button type="button" class="btn @(isGridView ? "btn-primary" : "btn-outline-primary")" 
+                    @onclick="() => SwitchView(true)" title="Сетка">
+                <i class="fas fa-th-large"></i>
+            </button>
+            <button type="button" class="btn @(!isGridView ? "btn-primary" : "btn-outline-primary")" 
+                    @onclick="() => SwitchView(false)" title="Список">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="search-section mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" 
+                   placeholder="Поиск тестов..." 
+                   @bind="searchQuery" 
+                   @bind:event="oninput"
+                   @onkeyup="HandleSearch" />
+            <button class="btn btn-outline-primary" @onclick="HandleSearch">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        @if (allTags.Any())
+        {
+            <div class="search-options mt-2">
+                @foreach (var tag in allTags)
+                {
+                    <button class="btn @(selectedTag == tag ? "btn-primary" : "btn-outline-primary") btn-sm me-2 mb-2"
+                            @onclick="() => FilterByTag(tag)">
+                        @tag
+                    </button>
+                }
+                @if (!string.IsNullOrEmpty(selectedTag))
+                {
+                    <button class="btn btn-outline-secondary btn-sm" @onclick="ClearFilters">
+                        Сбросить фильтры
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    @if (tests == null)
+    {
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="mt-2">Загружаем тесты...</p>
+        </div>
+    }
+    else if (!tests.Any())
+    {
+        <div class="alert alert-info">
+            @if (!string.IsNullOrEmpty(searchQuery) || !string.IsNullOrEmpty(selectedTag))
+            {
+                <span>По вашему запросу ничего не найдено. <button class="btn btn-link p-0" @onclick="ClearFilters">Сбросить фильтры</button></span>
+            }
+            else
+            {
+                <span>Тестов пока нет. Заходите позже!</span>
+            }
+        </div>
+    }
+    else
+    {
+        @if (isGridView)
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="gridView">
+                @foreach (var test in tests)
+                {
+                    <div class="col">
+                        <a href="/tests/@test.Id" class="card-link">
+                            <div class="test-card card h-100">
+                                @if (!string.IsNullOrEmpty(test.ImageUrl))
+                                {
+                                    <div class="card-img-container">
+                                        <img src="@test.ImageUrl" class="card-img-top" alt="@test.Title">
+                                    </div>
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@test.Title</h5>
+                                    @if (!string.IsNullOrEmpty(test.Description))
+                                    {
+                                        <p class="card-text">@test.Description</p>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrEmpty(test.Tags))
+                                {
+                                    <div class="card-footer">
+                                        <div class="tags">
+                                            @foreach (var tag in test.Tags.Split(','))
+                                            {
+                                                <span class="badge bg-primary">@tag.Trim()</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="tests-list" id="listView">
+                @foreach (var test in tests)
+                {
+                    <a href="/tests/@test.Id" class="card-link">
+                        <div class="card mb-4 test-list-item">
+                            <div class="row g-0">
+                                @if (!string.IsNullOrEmpty(test.ImageUrl))
+                                {
+                                    <div class="col-md-4 list-img-container">
+                                        <img src="@test.ImageUrl" class="img-fluid rounded-start" alt="@test.Title">
+                                    </div>
+                                }
+                                <div class="@(string.IsNullOrEmpty(test.ImageUrl) ? "col-md-12" : "col-md-8")">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@test.Title</h5>
+                                        @if (!string.IsNullOrEmpty(test.Description))
+                                        {
+                                            <p class="card-text">@test.Description</p>
+                                        }
+                                        <div class="tags">
+                                            @foreach (var tag in test.Tags.Split(','))
+                                            {
+                                                <span class="badge bg-primary">@tag.Trim()</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private bool isGridView = true;
+    private List<Test>? tests;
+    private List<string> allTags = new();
+    private string searchQuery = "";
+    private string selectedTag = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTests();
+        allTags = await TestService.GetAllTagsAsync();
+    }
+
+    private async Task LoadTests()
+    {
+        tests = await TestService.SearchTestsAsync(searchQuery, selectedTag);
+    }
+
+    private async Task HandleSearch()
+    {
+        await LoadTests();
+    }
+
+    private async Task FilterByTag(string tag)
+    {
+        selectedTag = selectedTag == tag ? "" : tag;
+        await LoadTests();
+    }
+
+    private async Task ClearFilters()
+    {
+        searchQuery = "";
+        selectedTag = "";
+        await LoadTests();
+    }
+
+    private async Task SwitchView(bool gridView)
+    {
+        if (isGridView == gridView) return;
+        
+        isGridView = gridView;
+        
+        await Task.Delay(10);
+        string viewId = gridView ? "gridView" : "listView";
+        await JSRuntime.InvokeVoidAsync("animateViewChange", viewId);
+    }
+} 

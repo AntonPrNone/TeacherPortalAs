@@ -1,0 +1,120 @@
+.stages-editor {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+}
+
+.stage-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.stage-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.questions-container {
+    padding: 1rem;
+}
+
+.question-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+}
+
+.answers-container {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e0;
+}
+
+.answer-item {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+}
+
+.add-buttons-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.stage-number {
+    font-weight: 600;
+    color: #4a5568;
+    min-width: 80px;
+}
+
+.question-number {
+    font-weight: 500;
+    color: #4a5568;
+    min-width: 100px;
+}
+
+.answer-number {
+    color: #6b7280;
+    min-width: 25px;
+}
+
+.btn-outline-secondary {
+    color: #4b5563;
+    border-color: #d1d5db;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.answer-item .form-control {
+    margin-right: 0.5rem;
+}
+
+.stage-header .form-control {
+    margin-right: 1rem;
+}
+
+/* Увеличиваем специфичность селектора */
+.question-item textarea.form-control, 
+.answer-item textarea.form-control,
+.stages-editor textarea.form-control {
+    resize: none;
+    min-height: 24px;
+    line-height: 1.5;
+    overflow-y: hidden;
+    height: auto;
+    padding: 4px 8px;
+}
+
+.question-textarea {
+    height: auto;
+}
+
+.answer-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.75rem;
+}
+
+.answer-item .form-check-input {
+    margin-top: 0.5rem;
+} 

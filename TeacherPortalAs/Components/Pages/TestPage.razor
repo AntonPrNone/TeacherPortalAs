@@ -1,0 +1,276 @@
+@page "/tests/{Id:int}"
+@using TeacherPortalAs.Services
+@using TeacherPortalAs.Models
+@using System.Text.Json
+@rendermode InteractiveWebAssembly
+@inject ITestService TestService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<PageTitle>@(test?.Title ?? "Загрузка теста...")</PageTitle>
+
+<div class="test-page-container">
+    @if (test == null)
+    {
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="mt-2">Загружаем тест...</p>
+        </div>
+    }
+    else if (!isStarted)
+    {
+        <div class="test-intro">
+            <h1>@test.Title</h1>
+            <p class="lead">@test.Description</p>
+
+            @if (!string.IsNullOrEmpty(test.ImageUrl))
+            {
+                <img src="@test.ImageUrl" alt="@test.Title" class="test-image mb-4">
+            }
+
+            <div class="test-info">
+                <p><i class="fas fa-list-ol me-2"></i>Количество вопросов: @test.Questions.Count</p>
+                @if (!string.IsNullOrEmpty(test.Tags))
+                {
+                    <div class="tags mb-3">
+                        @foreach (var tag in test.Tags.Split(','))
+                        {
+                            <span class="badge bg-primary me-1">@tag.Trim()</span>
+                        }
+                    </div>
+                }
+            </div>
+
+            <button class="btn btn-primary btn-lg" @onclick="StartTest">
+                Начать тест
+            </button>
+        </div>
+    }
+    else if (!isFinished)
+    {
+        <div class="test-progress">
+            <div class="progress mb-4">
+                <div class="progress-bar" style="width: @($"{progressPercentage}%")"
+                     title="Вопрос @(currentQuestionIndex + 1) из @test.Questions.Count">
+                    Вопрос @(currentQuestionIndex + 1) из @test.Questions.Count
+                </div>
+            </div>
+        </div>
+
+        <div class="question-container">
+            <h2>@test.Questions[currentQuestionIndex].Question</h2>
+
+            <div class="answers-list">
+                @foreach (var answer in test.Questions[currentQuestionIndex].Answers)
+                {
+                    <div class="answer-item @(selectedAnswers.Contains(answer) ? "selected" : "")"
+                         @onclick="() => SelectAnswer(answer)">
+                        @answer.Text
+                    </div>
+                }
+            </div>
+
+            <div class="test-navigation @(currentQuestionIndex == 0 ? "first-question" : "")">
+                @if (currentQuestionIndex > 0)
+                {
+                    <button class="btn btn-outline-primary" @onclick="PreviousQuestion">
+                        <i class="fas fa-arrow-left me-2"></i>Назад
+                    </button>
+                }
+                @if (currentQuestionIndex < test.Questions.Count - 1)
+                {
+                    <button class="btn btn-primary" @onclick="NextQuestion">
+                        Далее<i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-success" @onclick="FinishTest">
+                        Завершить<i class="fas fa-check ms-2"></i>
+                    </button>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="test-results">
+            <h2>Результаты теста "@test.Title"</h2>
+            <div class="result-summary">
+                <div class="score">
+                    <h3>Ваш результат:</h3>
+                    <div class="score-value">@correctAnswers из @test.Questions.Count</div>
+                    <div class="score-percentage">(@(Math.Round((double)correctAnswers / test.Questions.Count * 100))%)</div>
+                </div>
+            </div>
+
+            <div class="answers-review">
+                @for (var i = 0; i < test.Questions.Count; i++)
+                {
+                    var question = test.Questions[i];
+                    var isCorrect = userAnswers[i].All(a => a.IsCorrect) && 
+                                  question.Answers.Count(a => a.IsCorrect) == userAnswers[i].Count;
+
+                    <div class="question-review @(isCorrect ? "correct" : "incorrect")">
+                        <h4>
+                            <i class="fas @(isCorrect ? "fa-check-circle text-success" : "fa-times-circle text-danger")"></i>
+                            Вопрос @(i + 1)
+                        </h4>
+                        <p>@question.Question</p>
+
+                        <div class="answers-review-list">
+                            @foreach (var answer in question.Answers)
+                            {
+                                var isSelected = userAnswers[i].Contains(answer);
+                                <div class="answer-review @GetAnswerClass(answer, isSelected)">
+                                    <i class="fas @GetAnswerIcon(answer, isSelected)"></i>
+                                    @answer.Text
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="test-actions">
+                <button class="btn btn-primary" @onclick="RestartTest">
+                    Пройти тест заново
+                </button>
+                <button class="btn btn-outline-primary" @onclick="BackToTests">
+                    К списку тестов
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Test? test;
+    private bool isStarted;
+    private bool isFinished;
+    private int currentQuestionIndex = 0;
+    private int progressPercentage => ((currentQuestionIndex + 1) * 100) / test!.Questions.Count;
+    private List<TestAnswer> selectedAnswers = new();
+    private List<List<TestAnswer>> userAnswers = new();
+    private int correctAnswers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            test = await TestService.GetTestByIdAsync(Id);
+            if (test == null)
+            {
+                NavigationManager.NavigateTo("/tests");
+                return;
+            }
+
+            test.Questions = JsonSerializer.Deserialize<List<TestQuestion>>(test.QuestionsJson) ?? new();
+            userAnswers = new List<List<TestAnswer>>(new List<TestAnswer>[test.Questions.Count]);
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", "Ошибка при загрузке теста");
+            NavigationManager.NavigateTo("/tests");
+        }
+    }
+
+    private void StartTest()
+    {
+        isStarted = true;
+        currentQuestionIndex = 0;
+        userAnswers = new List<List<TestAnswer>>(new List<TestAnswer>[test!.Questions.Count]);
+        StateHasChanged();
+    }
+
+    private void SelectAnswer(TestAnswer answer)
+    {
+        if (selectedAnswers.Contains(answer))
+            selectedAnswers.Remove(answer);
+        else
+            selectedAnswers.Add(answer);
+    }
+
+    private void NextQuestion()
+    {
+        SaveCurrentAnswers();
+        currentQuestionIndex++;
+        LoadCurrentAnswers();
+    }
+
+    private void PreviousQuestion()
+    {
+        SaveCurrentAnswers();
+        currentQuestionIndex--;
+        LoadCurrentAnswers();
+    }
+
+    private void SaveCurrentAnswers()
+    {
+        userAnswers[currentQuestionIndex] = new List<TestAnswer>(selectedAnswers);
+    }
+
+    private void LoadCurrentAnswers()
+    {
+        selectedAnswers = userAnswers[currentQuestionIndex]?.ToList() ?? new List<TestAnswer>();
+    }
+
+    private void FinishTest()
+    {
+        SaveCurrentAnswers();
+        correctAnswers = 0;
+
+        for (var i = 0; i < test!.Questions.Count; i++)
+        {
+            var question = test.Questions[i];
+            var userAnswerList = userAnswers[i];
+
+            if (userAnswerList != null &&
+                userAnswerList.All(a => a.IsCorrect) &&
+                question.Answers.Count(a => a.IsCorrect) == userAnswerList.Count)
+            {
+                correctAnswers++;
+            }
+        }
+
+        isFinished = true;
+    }
+
+    private string GetAnswerClass(TestAnswer answer, bool isSelected)
+    {
+        if (!isSelected && !answer.IsCorrect) return "";
+        if (isSelected && answer.IsCorrect) return "correct";
+        if (isSelected && !answer.IsCorrect) return "incorrect";
+        if (!isSelected && answer.IsCorrect) return "missed";
+        return "";
+    }
+
+    private string GetAnswerIcon(TestAnswer answer, bool isSelected)
+    {
+        if (!isSelected && !answer.IsCorrect) return "fa-circle";
+        if (isSelected && answer.IsCorrect) return "fa-check-circle";
+        if (isSelected && !answer.IsCorrect) return "fa-times-circle";
+        if (!isSelected && answer.IsCorrect) return "fa-check-circle text-muted";
+        return "fa-circle";
+    }
+
+    private void RestartTest()
+    {
+        isStarted = false;
+        isFinished = false;
+        currentQuestionIndex = 0;
+        selectedAnswers.Clear();
+        userAnswers.Clear();
+        StateHasChanged();
+    }
+
+    private void BackToTests()
+    {
+        NavigationManager.NavigateTo("/tests");
+    }
+} 

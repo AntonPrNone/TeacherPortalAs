@@ -9,47 +9,48 @@
 
 <div class="blog-container">
     <h1>Блог</h1>
-    <p class="lead">Последние статьи и новости из мира образования</p>
-    
-    <!-- Добавляем поисковую панель -->
-    <div class="search-panel">
-        <div class="search-input-wrapper">
-            <i class="fas fa-search search-icon"></i>
-            <input 
-                type="text" 
-                class="search-input" 
-                placeholder="Поиск по блогу..." 
-                @bind-value="searchQuery" 
-                @bind-value:event="oninput"
-                @onkeyup="HandleSearch" />
-            @if (!string.IsNullOrEmpty(searchQuery))
-            {
-                <button class="clear-search" @onclick="ClearSearch">
-                    <i class="fas fa-times"></i>
-                </button>
-            }
+    <div class="header-flex">
+        <p class="lead mb-0">Последние статьи и новости из мира образования</p>
+        <div class="view-switcher">
+            <button type="button" class="btn @(isGridView ? "btn-primary" : "btn-outline-primary")" 
+                    @onclick="() => SwitchView(true)" title="Сетка">
+                <i class="fas fa-th-large"></i>
+            </button>
+            <button type="button" class="btn @(!isGridView ? "btn-primary" : "btn-outline-primary")" 
+                    @onclick="() => SwitchView(false)" title="Список">
+                <i class="fas fa-list"></i>
+            </button>
         </div>
-        <div class="search-options">
+    </div>
+    
+    <div class="search-section mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" 
+                   placeholder="Поиск в блоге..." 
+                   @bind="searchQuery" 
+                   @bind:event="oninput"
+                   @onkeyup="HandleSearch" />
+            <button class="btn btn-outline-primary" @onclick="HandleSearch">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        
+        <div class="search-options mt-2">
             <label class="search-option">
                 <input type="checkbox" 
                        @bind="searchInContent" 
                        @onclick="HandleSearch" />
                 Искать в содержимом
             </label>
+            @if (!string.IsNullOrEmpty(searchQuery))
+            {
+                <button class="btn btn-outline-secondary btn-sm" @onclick="ClearSearch">
+                    Сбросить поиск
+                </button>
+            }
         </div>
     </div>
     
-    <div class="view-switcher">
-        <button type="button" class="btn @(isGridView ? "btn-primary" : "btn-outline-primary")" 
-                @onclick="() => SwitchView(true)" title="Сетка">
-            <i class="fas fa-th-large"></i>
-        </button>
-        <button type="button" class="btn @(!isGridView ? "btn-primary" : "btn-outline-primary")" 
-                @onclick="() => SwitchView(false)" title="Список">
-            <i class="fas fa-list"></i>
-        </button>
-    </div>
-
     @if (posts == null)
     {
         <div class="text-center my-5">

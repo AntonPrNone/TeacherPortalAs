@@ -9,7 +9,6 @@
 @using Supabase.Gotrue.Interfaces
 @inject Supabase.Client SupabaseClient
 @inject NavigationManager NavigationManager
-@inject ISubjectService SubjectService
 @inject IJSRuntime JS
 @inject IGotrueSessionPersistence<Session> SessionHandler
 
@@ -24,16 +23,6 @@
     <div class="admin-content">
         <div class="admin-sidebar">
             <div class="admin-nav">
-                <button class="nav-item @(currentSection == "subjects" ? "active" : "")" 
-                        @onclick='() => currentSection = "subjects"'>
-                    <i class="fas fa-book"></i>
-                    <span>Предметы</span>
-                </button>
-                <button class="nav-item @(currentSection == "materials" ? "active" : "")" 
-                        @onclick='() => currentSection = "materials"'>
-                    <i class="fas fa-file-alt"></i>
-                    <span>Материалы</span>
-                </button>
                 <button class="nav-item @(currentSection == "blog" ? "active" : "")" 
                         @onclick='() => currentSection = "blog"'>
                     <i class="fas fa-newspaper"></i>
@@ -50,17 +39,11 @@
         <div class="admin-main">
             @switch (currentSection)
             {
-                case "subjects":
-                    <TeacherPortalAs.Components.Pages.Admin.Components.SubjectsManager />
-                    break;
-                case "materials":
-                    <TeacherPortalAs.Components.Pages.Admin.Components.MaterialsManager />
-                    break;
-                case "tests":
-                    <TeacherPortalAs.Components.Pages.Admin.Components.TestsManager />
-                    break;
                 case "blog":
                     <BlogManager />
+                    break;
+                case "tests":
+                    <TestManager />
                     break;
             }
         </div>
@@ -68,7 +51,7 @@
 </div>
 
 @code {
-    private string currentSection = "subjects";
+    private string currentSection = "blog";
     
     protected override async Task OnInitializedAsync()
     {
@@ -84,7 +67,6 @@
 
     private async Task HandleLogout()
     {
-        await ((CustomSessionHandler)SessionHandler).DestroySessionAsync();
         await SupabaseClient.Auth.SignOut();
         NavigationManager.NavigateTo("/admin/login");
     }

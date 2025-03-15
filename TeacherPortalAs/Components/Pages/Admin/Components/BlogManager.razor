@@ -22,7 +22,7 @@
     }
     else
     {
-        <div class="table-container">
+        <div class="table-responsive">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -38,15 +38,22 @@
                         <tr>
                             <td>@post.Title</td>
                             <td>@post.CreatedAt.ToString("dd.MM.yyyy")</td>
-                            <td>@(post.IsPublished ? "Опубликован" : "Черновик")</td>
+                            <td>
+                                @if (post.IsPublished)
+                                {
+                                    <span class="badge bg-success">Опубликован</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Черновик</span>
+                                }
+                            </td>
                             <td class="actions-cell">
                                 <button class="action-button btn-edit" @onclick="() => ShowDialog(post)">
                                     <i class="fas fa-edit"></i>
-                                    <span>Изменить</span>
                                 </button>
                                 <button class="action-button btn-delete" @onclick="() => DeletePost(post.Id)">
                                     <i class="fas fa-trash"></i>
-                                    <span>Удалить</span>
                                 </button>
                             </td>
                         </tr>

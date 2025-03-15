@@ -59,8 +59,13 @@ public class CustomSessionHandler : IGotrueSessionPersistence<Session>
         {
             var accessToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", ACCESS_TOKEN_KEY);
             var refreshToken = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", REFRESH_TOKEN_KEY);
-            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken)) return null;
-            return new Session { AccessToken = accessToken, RefreshToken = refreshToken };
+            
+            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken)) 
+                return null;
+                
+            // Сохраняем в кэш, чтобы избежать множественных попыток использовать один токен
+            _cachedSession = new Session { AccessToken = accessToken, RefreshToken = refreshToken };
+            return _cachedSession;
         }
         catch (Exception ex)
         {
@@ -124,9 +129,8 @@ public class Program
 
         builder.Services.AddSingleton(supabase);
 
-        builder.Services.AddSingleton<ISubjectService, SubjectService>();
-        builder.Services.AddSingleton<IMaterialService, MaterialService>();
         builder.Services.AddSingleton<IBlogService, BlogService>();
+        builder.Services.AddSingleton<ITestService, TestService>();
 
         var app = builder.Build();
 
