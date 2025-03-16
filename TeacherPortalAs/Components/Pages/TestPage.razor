@@ -22,30 +22,91 @@
     else if (!isStarted)
     {
         <div class="test-intro">
-            <h1>@test.Title</h1>
-            <p class="lead">@test.Description</p>
-
+            <div class="test-header">
+                <div class="test-breadcrumbs">
+                    <a href="/tests"><i class="fas fa-arrow-left"></i> Вернуться к тестам</a>
+                </div>
+                <h1>@test.Title</h1>
+            </div>
+            
             @if (!string.IsNullOrEmpty(test.ImageUrl))
             {
-                <img src="@test.ImageUrl" alt="@test.Title" class="test-image mb-4">
+                <div class="test-image-container">
+                    <img src="@test.ImageUrl" alt="@test.Title" class="test-image" />
+                </div>
             }
-
-            <div class="test-info">
-                <p><i class="fas fa-list-ol me-2"></i>Количество вопросов: @test.Questions.Count</p>
-                @if (!string.IsNullOrEmpty(test.Tags))
-                {
-                    <div class="tags mb-3">
-                        @foreach (var tag in test.Tags.Split(','))
-                        {
-                            <span class="badge bg-primary me-1">@tag.Trim()</span>
-                        }
+            
+            <div class="test-content-container">
+                <div class="test-sidebar">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-list-ol"></i>
+                        </div>
+                        <div class="info-details">
+                            <div class="info-value">@test.Questions.Count</div>
+                            <div class="info-label">Вопросов</div>
+                        </div>
                     </div>
-                }
+                    
+                    <div class="tags-section">
+                        <h3><i class="fas fa-tags"></i> Теги</h3>
+                        <div class="tags-wrapper" style="position: relative; overflow: hidden; margin-bottom: 0; padding-bottom: 0;">
+                            <div class="tags-container @(showAllTags ? "expanded" : "")" id="tagsContainer" style="padding-bottom: 0; margin-bottom: 0; background: linear-gradient(135deg, #F9FAFB 0%, #F3F4FF 100%); border-radius: 0.5rem; padding: 0.75rem; border: 1px solid rgba(79, 70, 229, 0.1);">
+                                @if (!string.IsNullOrEmpty(test.Tags))
+                                {
+                                    @foreach (var tag in test.Tags.Split(','))
+                                    {
+                                        <span class="test-tag">@tag.Trim()</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="no-tags">Нет тегов</span>
+                                }
+                            </div>
+                            @if (!showAllTags && needTagsExpand)
+                            {
+                                <div class="truncate-indicator" style="position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(135deg, #F9FAFB 0%, #F3F4FF 100%); border-bottom: 1px solid rgba(79, 70, 229, 0.1); border-left: 1px solid rgba(79, 70, 229, 0.1); border-right: 1px solid rgba(79, 70, 229, 0.1); text-align: center; z-index: 5; border-radius: 0 0 0.5rem 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                    <span style="font-size: 0.85rem; color: #4F46E5;">• • •</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="button-container">
+                            <button class="expand-button" style="display: @(needTagsExpand ? "flex" : "none")" @onclick="ToggleTags" id="tagsExpandButton">
+                                @(showAllTags ? "Скрыть" : "Показать все теги") 
+                                <i class="fas @(showAllTags ? "fa-chevron-up" : "fa-chevron-down")"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-main-content">
+                    <div class="test-description-card">
+                        <h3><i class="fas fa-info-circle"></i> Описание</h3>
+                        <div class="test-description-wrapper" style="position: relative; overflow: hidden; margin: 0; padding: 0.5rem 0;">
+                            <div class="test-description @(showFullDescription ? "expanded" : "")" id="descriptionContainer" style="margin: 0; padding: 0.75rem 1rem; background: linear-gradient(135deg, #F9FAFB 0%, #F3F4FF 100%); border-radius: 0.5rem; border: 1px solid rgba(79, 70, 229, 0.1);">
+                                @((MarkupString)test.Description)
+                            </div>
+                            @if (!showFullDescription && needDescriptionExpand)
+                            {
+                                <div class="truncate-indicator" style="position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(135deg, #F9FAFB 0%, #F3F4FF 100%); border-bottom: 1px solid rgba(79, 70, 229, 0.1); border-left: 1px solid rgba(79, 70, 229, 0.1); border-right: 1px solid rgba(79, 70, 229, 0.1); text-align: center; z-index: 5; border-radius: 0 0 0.5rem 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                    <span style="font-size: 0.85rem; color: #4F46E5;">• • •</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="button-container">
+                            <button class="expand-button" style="display: @(needDescriptionExpand ? "flex" : "none")" @onclick="ToggleDescription" id="descriptionExpandButton">
+                                @(showFullDescription ? "Скрыть" : "Читать полностью") 
+                                <i class="fas @(showFullDescription ? "fa-chevron-up" : "fa-chevron-down")"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="test-start-btn" @onclick="StartTest">
+                        <i class="fas fa-play-circle"></i> Начать тест
+                    </button>
+                </div>
             </div>
-
-            <button class="btn btn-primary btn-lg" @onclick="StartTest">
-                Начать тест
-            </button>
         </div>
     }
     else if (!isFinished)
@@ -59,38 +120,54 @@
             </div>
         </div>
 
-        <div class="question-container">
-            <h2>@test.Questions[currentQuestionIndex].Question</h2>
-
-            <div class="answers-list">
-                @foreach (var answer in test.Questions[currentQuestionIndex].Answers)
-                {
-                    <div class="answer-item @(selectedAnswers.Contains(answer) ? "selected" : "")"
-                         @onclick="() => SelectAnswer(answer)">
-                        @answer.Text
+        <div class="test-navigation-container">
+            <div class="question-wrapper">
+                <div class="question-container">
+                    <h2>@test.Questions[currentQuestionIndex].Question</h2>
+                    
+                    <div class="answers-list">
+                        @foreach (var answer in test.Questions[currentQuestionIndex].Answers)
+                        {
+                            <div class="answer-item @(selectedAnswers.Contains(answer) ? "selected" : "")"
+                                 @onclick="() => SelectAnswer(answer)">
+                                @answer.Text
+                            </div>
+                        }
                     </div>
-                }
+                    
+                    <div class="navigation-buttons">
+                        <button class="btn @(currentQuestionIndex > 0 ? "btn-outline-primary" : "btn-outline-secondary")" type="button" @onclick="PreviousQuestion" disabled="@(currentQuestionIndex == 0)">
+                            <i class="fas fa-arrow-left me-2"></i> Предыдущий
+                        </button>
+                        
+                        @if (currentQuestionIndex < test.Questions.Count - 1)
+                        {
+                            <button class="btn btn-primary" type="button" @onclick="NextQuestion">
+                                Следующий <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success" type="button" @onclick="FinishTest">
+                                Завершить тест <i class="fas fa-check ms-2"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
             </div>
 
-            <div class="test-navigation @(currentQuestionIndex == 0 ? "first-question" : "")">
-                @if (currentQuestionIndex > 0)
-                {
-                    <button class="btn btn-outline-primary" @onclick="PreviousQuestion">
-                        <i class="fas fa-arrow-left me-2"></i>Назад
-                    </button>
-                }
-                @if (currentQuestionIndex < test.Questions.Count - 1)
-                {
-                    <button class="btn btn-primary" @onclick="NextQuestion">
-                        Далее<i class="fas fa-arrow-right ms-2"></i>
-                    </button>
-                }
-                else
-                {
-                    <button class="btn btn-success" @onclick="FinishTest">
-                        Завершить<i class="fas fa-check ms-2"></i>
-                    </button>
-                }
+            <div class="questions-navigation">
+                <div class="navigation-header">Навигация по вопросам</div>
+                <div class="questions-numbers">
+                    @for (int i = 0; i < test.Questions.Count; i++)
+                    {
+                        int questionIndex = i; // Создаем локальную переменную
+                        <div class="question-number-item @(questionIndex == currentQuestionIndex ? "active" : "") @(userAnswers[questionIndex]?.Count > 0 ? "answered" : "")" 
+                             @onclick="() => NavigateToQuestion(questionIndex)">
+                            @(questionIndex + 1)
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     }
@@ -156,8 +233,13 @@
     private int currentQuestionIndex = 0;
     private int progressPercentage => ((currentQuestionIndex + 1) * 100) / test!.Questions.Count;
     private List<TestAnswer> selectedAnswers = new();
-    private List<List<TestAnswer>> userAnswers = new();
+    private List<TestAnswer>[] userAnswers;
     private int correctAnswers;
+    private int testScore;
+    private bool showAllTags = false;
+    private bool showFullDescription = false;
+    private bool needTagsExpand = false;
+    private bool needDescriptionExpand = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -171,7 +253,11 @@
             }
 
             test.Questions = JsonSerializer.Deserialize<List<TestQuestion>>(test.QuestionsJson) ?? new();
-            userAnswers = new List<List<TestAnswer>>(new List<TestAnswer>[test.Questions.Count]);
+            userAnswers = new List<TestAnswer>[test.Questions.Count];
+            for (int i = 0; i < userAnswers.Length; i++)
+            {
+                userAnswers[i] = new List<TestAnswer>();
+            }
         }
         catch (Exception ex)
         {
@@ -180,11 +266,19 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckNeedExpand();
+        }
+    }
+
     private void StartTest()
     {
         isStarted = true;
         currentQuestionIndex = 0;
-        userAnswers = new List<List<TestAnswer>>(new List<TestAnswer>[test!.Questions.Count]);
+        selectedAnswers.Clear();
         StateHasChanged();
     }
 
@@ -198,9 +292,14 @@
 
     private void NextQuestion()
     {
-        SaveCurrentAnswers();
+        // Сохраняем ответы текущего вопроса
+        userAnswers[currentQuestionIndex] = new List<TestAnswer>(selectedAnswers);
+        
+        // Переходим к следующему вопросу
         currentQuestionIndex++;
-        LoadCurrentAnswers();
+        
+        // Загружаем выбранные ранее ответы для следующего вопроса (если они есть)
+        selectedAnswers = userAnswers[currentQuestionIndex]?.ToList() ?? new List<TestAnswer>();
     }
 
     private void PreviousQuestion()
@@ -222,22 +321,28 @@
 
     private void FinishTest()
     {
-        SaveCurrentAnswers();
+        // Сохраняем ответы на последний вопрос
+        userAnswers[currentQuestionIndex] = new List<TestAnswer>(selectedAnswers);
+        
+        // Подсчет результатов
         correctAnswers = 0;
-
-        for (var i = 0; i < test!.Questions.Count; i++)
+        
+        for (int i = 0; i < test.Questions.Count; i++)
         {
+            // Проверяем, ответил ли пользователь на вопрос
             var question = test.Questions[i];
-            var userAnswerList = userAnswers[i];
-
-            if (userAnswerList != null &&
-                userAnswerList.All(a => a.IsCorrect) &&
-                question.Answers.Count(a => a.IsCorrect) == userAnswerList.Count)
+            if (userAnswers[i] != null && userAnswers[i].Count > 0 && 
+                userAnswers[i].All(a => a.IsCorrect) && 
+                question.Answers.Count(a => a.IsCorrect) == userAnswers[i].Count)
             {
                 correctAnswers++;
             }
         }
-
+        
+        // Вычисляем процент правильных ответов
+        testScore = (int)((double)correctAnswers / test.Questions.Count * 100);
+        
+        // Отмечаем, что тест завершен
         isFinished = true;
     }
 
@@ -265,12 +370,112 @@
         isFinished = false;
         currentQuestionIndex = 0;
         selectedAnswers.Clear();
-        userAnswers.Clear();
         StateHasChanged();
     }
 
     private void BackToTests()
     {
         NavigationManager.NavigateTo("/tests");
+    }
+
+    private async Task ToggleTags()
+    {
+        // Запоминаем предыдущее состояние
+        bool wasExpanded = showAllTags;
+        showAllTags = !showAllTags;
+        
+        // Используем JavaScript для плавной анимации
+        if (showAllTags) {
+            await JS.InvokeVoidAsync("smoothlyExpand", "tagsContainer");
+        } else {
+            await JS.InvokeVoidAsync("smoothlyCollapse", "tagsContainer", "200");
+        }
+        
+        // Запоминаем, что контейнер был развернут
+        if (showAllTags) {
+            await JS.InvokeVoidAsync("setExpandedState", "tagsContainer", true);
+        }
+        
+        StateHasChanged();
+        
+        // Проверяем необходимость разворачивания только если это не сворачивание
+        if (!wasExpanded) {
+            await Task.Delay(50); // Минимальная задержка только при разворачивании
+            await CheckNeedExpand();
+        }
+    }
+
+    private async Task ToggleDescription()
+    {
+        // Запоминаем предыдущее состояние
+        bool wasExpanded = showFullDescription;
+        showFullDescription = !showFullDescription;
+        
+        // Используем JavaScript для плавной анимации
+        if (showFullDescription) {
+            await JS.InvokeVoidAsync("smoothlyExpand", "descriptionContainer");
+        } else {
+            await JS.InvokeVoidAsync("smoothlyCollapse", "descriptionContainer", "300");
+        }
+        
+        // Запоминаем, что контейнер был развернут
+        if (showFullDescription) {
+            await JS.InvokeVoidAsync("setExpandedState", "descriptionContainer", true);
+        }
+        
+        StateHasChanged();
+        
+        // Проверяем необходимость разворачивания только если это не сворачивание
+        if (!wasExpanded) {
+            await Task.Delay(50); // Минимальная задержка только при разворачивании
+            await CheckNeedExpand();
+        }
+    }
+
+    private async Task CheckNeedExpand()
+    {
+        try {
+            // Увеличиваем задержку для гарантии загрузки DOM
+            await Task.Delay(300);
+            
+            // Сначала проверяем существование элементов через JS
+            bool tagsExists = await JS.InvokeAsync<bool>("checkElementExists", "tagsContainer");
+            bool descExists = await JS.InvokeAsync<bool>("checkElementExists", "descriptionContainer");
+            
+            if (!tagsExists || !descExists) {
+                // Если элементов нет, пробуем еще раз через некоторое время
+                await Task.Delay(300);
+                await CheckNeedExpand();
+                return;
+            }
+            
+            var tagsNeed = await JS.InvokeAsync<bool>("checkContainerNeedsExpand", "tagsContainer");
+            var descNeed = await JS.InvokeAsync<bool>("checkContainerNeedsExpand", "descriptionContainer");
+            
+            needTagsExpand = tagsNeed;
+            needDescriptionExpand = descNeed;
+            
+            StateHasChanged();
+        }
+        catch (Exception ex) {
+            await JS.InvokeVoidAsync("console.error", ex.ToString());
+        }
+    }
+
+    private void NavigateToQuestion(int index)
+    {
+        // Сохраняем выбранные ответы для текущего вопроса
+        if (selectedAnswers.Count > 0)
+        {
+            userAnswers[currentQuestionIndex] = new List<TestAnswer>(selectedAnswers);
+        }
+        
+        // Переходим к выбранному вопросу
+        currentQuestionIndex = index;
+        
+        // Загружаем ранее выбранные ответы (если есть)
+        selectedAnswers = userAnswers[currentQuestionIndex]?.ToList() ?? new List<TestAnswer>();
+        
+        StateHasChanged();
     }
 } 
