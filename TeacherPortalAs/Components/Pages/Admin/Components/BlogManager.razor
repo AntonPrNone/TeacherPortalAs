@@ -78,8 +78,19 @@
             <div class="form-group">
                 <label for="imageUrl">URL изображения</label>
                 <input type="text" class="form-control" id="imageUrl" @bind="editingPost.ImageUrl" />
+                <small class="form-text text-muted">Загрузите изображение на <a href="https://postimages.org/" target="_blank">postimages.org</a> и скопируйте ссылку на изображение</small>
             </div>
             
+            @if (!string.IsNullOrEmpty(editingPost.ImageUrl))
+            {
+                <div class="image-preview mb-3">
+                    <label>Предпросмотр изображения:</label>
+                    <div class="preview-container">
+                        <img src="@editingPost.ImageUrl" alt="Предпросмотр" />
+                    </div>
+                </div>
+            }
+
             <div class="form-group">
                 <label>Форматирование текста:</label>
                 <div class="formatting-buttons">
