@@ -67,41 +67,42 @@
 {
     <div class="dialog-overlay">
         <div class="dialog">
-            <h3>@(currentTest.Id == 0 ? "Создание теста" : "Редактирование теста")</h3>
+            <h3>@(editingTest.Id == 0 ? "Создание теста" : "Редактирование теста")</h3>
 
             <div class="form-group">
                 <label for="title">Название теста</label>
-                <input type="text" class="form-control" id="title" @bind="currentTest.Title" />
+                <input type="text" class="form-control" id="title" @bind="editingTest.Title" />
             </div>
 
             <div class="form-group">
                 <label for="description">Описание</label>
-                <textarea class="form-control" id="description" rows="3" @bind="currentTest.Description"></textarea>
+                <textarea class="form-control" id="description" rows="3" @bind="editingTest.Description"></textarea>
             </div>
 
             <div class="form-group">
                 <label for="imageUrl">URL изображения</label>
-                <input type="text" class="form-control" id="imageUrl" @bind="currentTest.ImageUrl" />
+                <input type="text" class="form-control" id="imageUrl" @bind="editingTest.ImageUrl" />
             </div>
 
             <div class="form-group">
                 <label for="tags">Теги (через запятую)</label>
-                <input type="text" class="form-control" id="tags" @bind="currentTest.Tags" />
+                <input type="text" class="form-control" id="tags" @bind="editingTest.Tags" />
             </div>
 
-            <div class="form-group">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="isPublished" @bind="currentTest.IsPublished" />
-                    <label class="form-check-label" for="isPublished">Опубликован</label>
-                </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="isPublished" 
+                       @bind="editingTest.IsPublished" />
+                <label class="form-check-label" for="isPublished">
+                    Опубликовать
+                </label>
             </div>
 
             <div class="stages-editor">
                 <h4>Вопросы теста</h4>
                 
-                @for (var questionIndex = 0; questionIndex < currentTest.Questions.Count; questionIndex++)
+                @for (var questionIndex = 0; questionIndex < editingTest.Questions.Count; questionIndex++)
                 {
-                    var question = currentTest.Questions[questionIndex];
+                    var question = editingTest.Questions[questionIndex];
                     <div class="question-item">
                         <div class="d-flex align-items-start gap-3 mb-3">
                             <span class="question-number">Вопрос @(questionIndex + 1)</span>
@@ -156,7 +157,7 @@
             </div>
 
             <div class="dialog-buttons">
-                <button class="btn btn-secondary me-2" @onclick="CloseDialog">Отмена</button>
+                <button class="btn btn-secondary" @onclick="() => showDialog = false">Отмена</button>
                 <button class="btn btn-primary" @onclick="SaveTest">Сохранить</button>
             </div>
         </div>
@@ -166,10 +167,8 @@
 @code {
     private List<Test>? tests;
     private bool showDialog;
-    private Test currentTest = new()
-    {
-        Questions = new List<TestQuestion>()
-    };
+    private Test currentTest = new();
+    private Test editingTest = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -178,21 +177,33 @@
 
     private void ShowDialog(Test? test)
     {
-        if (test != null)
+        if (test == null)
         {
-            currentTest = test;
-            if (!string.IsNullOrEmpty(test.QuestionsJson))
-            {
-                currentTest.Questions = JsonSerializer.Deserialize<List<TestQuestion>>(test.QuestionsJson) ?? new List<TestQuestion>();
-            }
+            currentTest = new Test();
         }
         else
         {
             currentTest = new Test
             {
-                Questions = new List<TestQuestion>()
+                Id = test.Id,
+                Title = test.Title,
+                Description = test.Description,
+                ImageUrl = test.ImageUrl,
+                Tags = test.Tags,
+                IsPublished = test.IsPublished,
+                QuestionsJson = test.QuestionsJson,
+                Questions = test.Questions.Select(q => new TestQuestion
+                {
+                    Question = q.Question,
+                    Answers = q.Answers.Select(a => new TestAnswer
+                    {
+                        Text = a.Text,
+                        IsCorrect = a.IsCorrect
+                    }).ToList()
+                }).ToList()
             };
         }
+        editingTest = currentTest;
         showDialog = true;
     }
 
@@ -209,26 +220,17 @@
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(currentTest.Title))
+            if (editingTest.Id == 0)
             {
-                await JSRuntime.InvokeVoidAsync("alert", "Название теста обязательно");
-                return;
-            }
-
-            currentTest.QuestionsJson = JsonSerializer.Serialize(currentTest.Questions ?? new List<TestQuestion>());
-
-            if (currentTest.Id == 0)
-            {
-                await TestService.CreateTestAsync(currentTest);
+                await TestService.CreateTestAsync(editingTest);
             }
             else
             {
-                await TestService.UpdateTestAsync(currentTest);
+                await TestService.UpdateTestAsync(editingTest);
             }
-
+            
+            showDialog = false;
             await LoadTests();
-            CloseDialog();
-            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -239,8 +241,8 @@
 
     private void AddQuestion()
     {
-        var questionIndex = currentTest.Questions.Count;
-        currentTest.Questions.Add(new TestQuestion 
+        var questionIndex = editingTest.Questions.Count;
+        editingTest.Questions.Add(new TestQuestion 
         { 
             Question = "",
             Answers = new List<TestAnswer>
@@ -254,14 +256,14 @@
 
     private void RemoveQuestion(TestQuestion question)
     {
-        var index = currentTest.Questions.IndexOf(question);
-        currentTest.Questions.Remove(question);
+        var index = editingTest.Questions.IndexOf(question);
+        editingTest.Questions.Remove(question);
         StateHasChanged();
     }
 
     private void AddAnswer(TestQuestion question)
     {
-        var questionIndex = currentTest.Questions.IndexOf(question);
+        var questionIndex = editingTest.Questions.IndexOf(question);
         var answerIndex = question.Answers.Count;
         question.Answers.Add(new TestAnswer { Text = "", IsCorrect = false });
         StateHasChanged();
@@ -269,7 +271,7 @@
 
     private void RemoveAnswer(TestQuestion question, TestAnswer answer)
     {
-        var questionIndex = currentTest.Questions.IndexOf(question);
+        var questionIndex = editingTest.Questions.IndexOf(question);
         var answerIndex = question.Answers.IndexOf(answer);
         question.Answers.Remove(answer);
         StateHasChanged();

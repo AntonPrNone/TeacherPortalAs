@@ -68,26 +68,16 @@
 {
     <div class="dialog-overlay">
         <div class="dialog blog-dialog">
-            <h3>@(currentPost?.Id > 0 ? "Редактировать" : "Добавить") пост</h3>
+            <h3>@(editingPost.Id == 0 ? "Создание поста" : "Редактирование поста")</h3>
             
             <div class="form-group">
-                <label for="title">Заголовок:</label>
-                <input id="title" class="form-control" @bind="currentPost.Title" />
+                <label for="title">Заголовок</label>
+                <input type="text" class="form-control" id="title" @bind="editingPost.Title" />
             </div>
 
             <div class="form-group">
-                <label for="imageUrl">Ссылка на изображение:</label>
-                <input id="imageUrl" class="form-control" @bind="currentPost.ImageUrl" 
-                       placeholder="https://example.com/image.jpg" />
-                <small class="form-text text-muted">
-                    Загрузите изображение на <a href="https://postimages.org/" target="_blank">postimages.org</a> и вставьте прямую ссылку
-                </small>
-                @if (!string.IsNullOrEmpty(currentPost.ImageUrl))
-                {
-                    <div class="image-preview">
-                        <img src="@currentPost.ImageUrl" alt="Предпросмотр" />
-                    </div>
-                }
+                <label for="imageUrl">URL изображения</label>
+                <input type="text" class="form-control" id="imageUrl" @bind="editingPost.ImageUrl" />
             </div>
             
             <div class="form-group">
@@ -107,12 +97,13 @@
                     </button>
                 </div>
                 <textarea id="content" class="form-control content-editor" 
-                          @bind="currentPost.Content" rows="10"></textarea>
+                          @bind="editingPost.Content" rows="10"></textarea>
             </div>
 
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" @bind="currentPost.IsPublished" @bind:after="HandlePublishStateChanged" />
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="isPublished" 
+                      @bind="editingPost.IsPublished" />
+                <label class="form-check-label" for="isPublished">
                     Опубликовать
                 </label>
             </div>
@@ -129,6 +120,7 @@
     private List<Models.BlogPost>? posts;
     private bool showDialog;
     private Models.BlogPost currentPost = new();
+    private Models.BlogPost editingPost = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -137,7 +129,23 @@
 
     private void ShowDialog(Models.BlogPost? post)
     {
-        currentPost = post ?? new Models.BlogPost();
+        if (post == null)
+        {
+            currentPost = new Models.BlogPost();
+        }
+        else 
+        {
+            currentPost = new Models.BlogPost
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Content = post.Content,
+                ImageUrl = post.ImageUrl,
+                IsPublished = post.IsPublished,
+                CreatedAt = post.CreatedAt
+            };
+        }
+        editingPost = currentPost;
         showDialog = true;
     }
 
@@ -155,19 +163,19 @@
 
     private async Task SavePost()
     {
-        try 
+        try
         {
-            if (currentPost.Id == 0)
+            if (editingPost.Id == 0)
             {
-                await BlogService.CreateBlogPostAsync(currentPost);
+                await BlogService.CreateBlogPostAsync(editingPost);
             }
             else
             {
-                await BlogService.UpdateBlogPostAsync(currentPost);
+                await BlogService.UpdateBlogPostAsync(editingPost);
             }
-
+            
+            showDialog = false;
             await LoadPosts();
-            CloseDialog();
         }
         catch (Exception ex)
         {

@@ -1,7 +1,5 @@
-using Supabase;
 using TeacherPortalAs.Models;
 using Microsoft.AspNetCore.Components;
-using System.Text.Json;
 
 namespace TeacherPortalAs.Services
 {
@@ -84,7 +82,7 @@ namespace TeacherPortalAs.Services
 
                 var response = await _supabase
                     .From<TestDto>()
-                    .Insert(new[] { new TestDto
+                    .Insert([ new TestDto
                     {
                         Title = test.Title,
                         Description = test.Description,
@@ -94,7 +92,7 @@ namespace TeacherPortalAs.Services
                         QuestionsJson = test.QuestionsJson,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
-                    }});
+                    }]);
 
                 var createdTest = response.Models.First().ToTest();
                 InvalidateCache();
@@ -115,7 +113,7 @@ namespace TeacherPortalAs.Services
 
                 var response = await _supabase
                     .From<TestDto>()
-                    .Upsert(new[] { new TestDto
+                    .Upsert([ new TestDto
                     {
                         Id = test.Id,
                         Title = test.Title,
@@ -125,7 +123,7 @@ namespace TeacherPortalAs.Services
                         IsPublished = test.IsPublished,
                         QuestionsJson = test.QuestionsJson,
                         UpdatedAt = DateTime.Now
-                    }});
+                    }]);
 
                 var updatedTest = response.Models.First().ToTest();
                 InvalidateCache();
